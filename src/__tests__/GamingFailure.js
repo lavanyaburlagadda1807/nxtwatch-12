@@ -31,7 +31,7 @@ const restoreGetCookieFns = () => {
   Cookies.get.mockRestore()
 }
 
-const renderWithBrowserRouter = (ui = <App />, {route = '/gaming'} = {}) => {
+const renderWithBrowserRouter = (ui, {route = '/gaming'} = {}) => {
   window.history.pushState({}, 'Test page', route)
   return render(ui, {wrapper: BrowserRouter})
 }
@@ -73,17 +73,17 @@ describe(':::RJSCPYQN94_TEST_SUITE_2:::Gaming Route Failure tests', () => {
     server.listen()
   })
 
+  afterAll(() => {
+    server.close()
+  })
+
   afterEach(() => {
     server.resetHandlers()
     console.error = originalConsoleError
     window.fetch = originalFetch
   })
 
-  afterAll(() => {
-    server.close()
-  })
-
-  it(':::RJSCPYQN94_TEST_25:::When the HTTP GET request made in the Gaming Route is unsuccessful, then the page should consist of an HTML image element with alt attribute value as "failure view" and src as the given failure view image URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_25:::When the HTTP GET request made in Gaming Route is unsucessfull, the page should consist of the HTML image element with alt attribute value as "failure view" and src as the given Failure view image URL:::5:::', async () => {
     mockGetCookie()
     server.use(
       rest.get(gamingVideosApiUrl, (req, res, ctx) =>
@@ -93,16 +93,17 @@ describe(':::RJSCPYQN94_TEST_SUITE_2:::Gaming Route Failure tests', () => {
         ),
       ),
     )
-    renderWithBrowserRouter()
-    const imageEl = await screen.findByRole('img', {
+    renderWithBrowserRouter(<App />)
+    const imgEl = await screen.findByRole('img', {
       name: /failure view/i,
+      exact: false,
     })
-    expect(imageEl).toBeInTheDocument()
-    expect(imageEl.src).toBe(errorView)
+    expect(imgEl).toBeInTheDocument()
+    expect(imgEl.src).toBe(errorView)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_26:::When the HTTP GET request made in the Gaming Route is unsuccessful, then the page should consist of an HTML main heading element with text content as "Oops! Something Went Wrong":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_26:::When the HTTP GET request made in Gaming Route is unsucessfull, the page should consist of the HTML main heading element with text content as "Oops! Something Went Wrong":::5:::', async () => {
     mockGetCookie()
     server.use(
       rest.get(gamingVideosApiUrl, (req, res, ctx) =>
@@ -112,17 +113,18 @@ describe(':::RJSCPYQN94_TEST_SUITE_2:::Gaming Route Failure tests', () => {
         ),
       ),
     )
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
       await screen.findByRole('heading', {
-        name: /Oops*. Something Went Wrong/i,
+        name: /Oops! Something Went Wrong/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_27:::When the HTTP GET request made in the Gaming Route is unsuccessful, then the page should consist of an HTML paragraph element with text content starting with "We are having some trouble":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_27:::When the HTTP GET request made in Gaming Route is unsucessfull, the page should consist of the HTML paragraph element with text content as "We are having some trouble":::5:::', async () => {
     mockGetCookie()
     server.use(
       rest.get(gamingVideosApiUrl, (req, res, ctx) =>
@@ -132,15 +134,17 @@ describe(':::RJSCPYQN94_TEST_SUITE_2:::Gaming Route Failure tests', () => {
         ),
       ),
     )
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const paragraphEl = await screen.findByText(/We are having some trouble/i)
+    const paragraphEl = await screen.findByText(/We are having some trouble/i, {
+      exact: false,
+    })
     expect(paragraphEl).toBeInTheDocument()
     expect(paragraphEl.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_28:::When the HTTP GET request made in the Gaming Route is unsuccessful, then the page should consist of an HTML button element with text content as "Retry":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_28:::When the HTTP GET request made in Gaming Route is unsucessfull, the page should consist of the HTML button element with text content as "Retry":::5:::', async () => {
     mockGetCookie()
     server.use(
       rest.get(gamingVideosApiUrl, (req, res, ctx) =>
@@ -150,28 +154,31 @@ describe(':::RJSCPYQN94_TEST_SUITE_2:::Gaming Route Failure tests', () => {
         ),
       ),
     )
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('button', {name: /Retry/i}),
+      await screen.findByRole('button', {name: /Retry/i, exact: false}),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_29:::When the HTTP GET request made in the Gaming Route is unsuccessful and the Retry button is clicked, then an HTTP GET request should be made to the given Gaming Videos API URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_29:::When the HTTP GET request made in Gaming Route is unsucessfull and the "Retry" button is clicked, then an HTTP GET request should be made to gamingVideosApiUrl:::5:::', async () => {
     mockGetCookie()
     const mockFetchFunction = jest.fn().mockImplementation(() => ({
       ok: false,
       json: () => Promise.resolve({}),
     }))
     window.fetch = mockFetchFunction
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     const buttonEl = await screen.findByRole('button', {
       name: /Retry/i,
+      exact: false,
     })
     expect(buttonEl).toBeInTheDocument()
     userEvent.click(buttonEl)
     expect(mockFetchFunction.mock.calls[1][0]).toBe(`${gamingVideosApiUrl}`)
     restoreGetCookieFns()
   })
+
+  // #endregion
 })

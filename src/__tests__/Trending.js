@@ -12,7 +12,7 @@ import App from '../App'
 
 const websiteLogo =
   'https://assets.ccbp.in/frontend/react-js/nxt-watch-logo-light-theme-img.png'
-const profileImage =
+const profilePicImage =
   'https://assets.ccbp.in/frontend/react-js/nxt-watch-profile-img.png'
 
 const facebookLogo =
@@ -43,7 +43,7 @@ const restoreGetCookieFns = () => {
   Cookies.get.mockRestore()
 }
 
-const renderWithBrowserRouter = (ui = <App />, {route = '/trending'} = {}) => {
+const renderWithBrowserRouter = (ui, {route = '/trending'} = {}) => {
   window.history.pushState({}, 'Test page', route)
   return render(ui, {wrapper: BrowserRouter})
 }
@@ -176,6 +176,7 @@ const handlers = [
 ]
 
 const server = setupServer(...handlers)
+
 const originalConsoleError = console.error
 const originalFetch = window.fetch
 
@@ -184,19 +185,19 @@ describe(':::RJSCPYQN94_TEST_SUITE_11:::Trending Route UI tests', () => {
     server.listen()
   })
 
+  afterAll(() => {
+    server.close()
+  })
+
   afterEach(() => {
     server.resetHandlers()
     console.error = originalConsoleError
     window.fetch = originalFetch
   })
 
-  afterAll(() => {
-    server.close()
-  })
-
   // #region UI Test Cases
 
-  it(':::RJSCPYQN94_TEST_177:::Page should consist of at least two HTML list items, videos list received from the response and the nav items list should be rendered using a unique key as a prop for each video item and nav item respectively:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_180:::Page should consist of at least two HTML list items and the navItemsList, videosList received from the response should be rendered using a unique key as a prop for each nav item and video item respectively :::5:::', async () => {
     mockGetCookie()
     console.error = message => {
       if (
@@ -206,203 +207,278 @@ describe(':::RJSCPYQN94_TEST_SUITE_11:::Trending Route UI tests', () => {
         throw new Error(message)
       }
     }
-    renderWithBrowserRouter()
-    await waitForElementToBeRemoved(() => screen.queryByTestId('loader'))
+    renderWithBrowserRouter(<App />)
+
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
 
     expect(screen.getAllByRole('listitem').length).toBeGreaterThanOrEqual(2)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_178:::When "/trending" is provided as the URL path by an unauthenticated user, then the page should be navigated to the Login Route:::5:::', () => {
+  it(':::RJSCPYQN94_TEST_181:::When "/trending" is provided as the URL by an unauthenticated user, then the page should be navigated to Login Route:::5:::', () => {
     mockGetCookie(false)
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     expect(window.location.pathname).toBe(loginRoutePath)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_179:::When "/trending" is provided as the URL path by an authenticated user, then the page should be navigated to the Trending Route and should consist of an HTML main heading element with text content as "Trending":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_182:::When "/trending" is provided as the URL by an authenticated user, then the page should be navigated to Trending Route:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    expect(window.location.pathname).toBe(trendingRoutePath)
     expect(
-      await screen.findByRole('heading', {name: /Trending/i}),
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
     ).toBeInTheDocument()
+    expect(window.location.pathname).toBe(trendingRoutePath)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_180:::Trending Route should consist of an HTML image element in the Header with alt attribute value as "website logo" and src as the given logo URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_183:::Trending Route should consist of an HTML image element in the Header with alt attribute value as "website logo" and src as given logo URL:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-
-    const imageEls = await screen.findAllByRole('img', {
+    renderWithBrowserRouter(<App />)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+    const imageEls = screen.getAllByRole('img', {
       name: /website logo/i,
+      exact: false,
     })
     expect(imageEls[0]).toBeInTheDocument()
     expect(imageEls[0].src).toBe(websiteLogo)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_181:::Trending Route should consist of an HTML image element in the Header with alt attribute value as "website logo" and src as the given logo URL, wrapped with Link from react-router-dom:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_184:::Trending Route should consist of an HTML image element in the Header with alt attribute value as "website logo" and src as the given logo URL is wrapped with Link from react-router-dom:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-
-    const websiteLogos = await screen.findAllByRole('link', {
-      name: /website logo/i,
-    })
-
-    expect(websiteLogos[0]).toBeInTheDocument()
+    renderWithBrowserRouter(<App />)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+    expect(
+      screen.getAllByRole('link', {
+        name: /website logo/,
+        exact: false,
+      })[0],
+    ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_182:::Trending Route should consist of an HTML button element with data-testid attribute value as "theme" in the Header:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_185:::Trending Route should consist of an HTML button element with data-testid attribute value as "theme" in the Header:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
 
-    const themeButtons = await screen.findAllByTestId('theme')
+    const themeButton = await screen.getAllByTestId('theme')
 
-    expect(themeButtons[0]).toBeInTheDocument()
-    expect(themeButtons[0].tagName).toBe('BUTTON')
+    expect(themeButton[0]).toBeInTheDocument()
+    expect(themeButton[0].tagName).toBe('BUTTON')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_183:::Trending Route should consist of an HTML image element in the Header with alt attribute value as "profile" and src as the value of given profile image URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_186:::Trending Route should consist of an HTML image element in the Header with alt attribute value as "profile" and src as the value of given profile image URL:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-
-    const imageEl = await screen.findByRole('img', {
+    renderWithBrowserRouter(<App />)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+    const imageEls = screen.getByRole('img', {
       hidden: true,
       name: /profile/i,
+      exact: false,
     })
-    expect(imageEl).toBeInTheDocument()
-    expect(imageEl.src).toBe(profileImage)
+    expect(imageEls).toBeInTheDocument()
+    expect(imageEls.src).toBe(profilePicImage)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_184:::Trending Route should consist of an HTML button element with text content as "Logout" in the Header:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_187:::Trending Route should consist of an HTML button element with text content as "Logout" in the Header:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-
+    renderWithBrowserRouter(<App />)
     expect(
-      await screen.findByRole('button', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', {
         hidden: true,
         name: /Logout/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_185:::Trending Route should consist of a Link from react-router-dom with text content as "Home":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_188:::Trending Route should consist of at least two HTML unordered list elements navItemsList, videosList received from the response to display nav items and video items:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+    const listItems = await screen.findAllByRole('list', {hidden: true})
+    expect(listItems.length).toBeGreaterThanOrEqual(2)
+    expect(listItems[0].tagName).toBe('UL')
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_189:::Trending Route should consists of "Home" text wrapped with Link from react-router-dom:::5:::', async () => {
+    mockGetCookie()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('link', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
         hidden: true,
         name: /Home/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_186:::Trending Route should consist of a Link from react-router-dom with text content as "Trending":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_190:::Trending Route should consists of "Trending" text wrapped with Link from react-router-dom:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('link', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
         hidden: true,
         name: /Trending/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_187:::Trending Route should consist of a Link from react-router-dom with text content as "Gaming":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_191:::Trending Route should consists of "Gaming" text wrapped with Link from react-router-dom:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('link', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
         hidden: true,
         name: /Gaming/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_188:::Trending Route should consist of a Link from react-router-dom with text content as "Saved videos":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_192:::Trending Route should consists of "Saved videos" text wrapped with Link from react-router-dom:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('link', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
         hidden: true,
         name: /Saved videos/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_189:::Trending Route should consist of an HTML paragraph element with text content as "CONTACT US" in the Sidebar:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_193:::Trending Route should consist of an HTML paragraph element with text content starting with "CONTACT US" in the sidebar:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const paragraphEl = await screen.findByText(/CONTACT US/i, {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const paragraphEl = screen.getByText(/^CONTACT US/i, {
       hidden: true,
+      exact: false,
     })
     expect(paragraphEl).toBeInTheDocument()
     expect(paragraphEl.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_190:::Trending Route should consist of an HTML image element with alt attribute value as "facebook logo" and src as the given Facebook logo URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_194:::Trending Route should consist of an HTML image element with alt attribute value as "facebook logo" and src as the value of the given facebook logo URL:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const imageEl = await screen.findByRole('img', {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const imageEl = screen.getByRole('img', {
       hidden: true,
       name: /facebook logo/i,
+      exact: false,
     })
     expect(imageEl).toBeInTheDocument()
     expect(imageEl.src).toBe(facebookLogo)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_191:::Trending Route should consist of an HTML image element with alt attribute value as "twitter logo" and src as the given Twitter logo URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_195:::Trending Route should consist of an HTML image element with alt attribute value as "twitter logo" and src as the value of the given twitter logo URL:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const imageEl = await screen.findByRole('img', {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const imageEl = screen.getByRole('img', {
       hidden: true,
       name: /twitter logo/i,
+      exact: false,
     })
     expect(imageEl).toBeInTheDocument()
     expect(imageEl.src).toBe(twitterLogo)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_192:::Trending Route should consist of an HTML image element with alt attribute value as "linkedin logo" and src as the given LinkedIn logo URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_196:::Trending Route should consist of an HTML image element with alt attribute value as "linked in logo" and src as the value of the given linked in logo URL:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const imageEl = await screen.findByRole('img', {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const imageEl = screen.getByRole('img', {
       hidden: true,
-      name: /linkedin logo/i,
+      name: /linked in logo/i,
+      exact: false,
     })
     expect(imageEl).toBeInTheDocument()
     expect(imageEl.src).toBe(linkedInLogo)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_193:::Trending Route should consist of an HTML paragraph element with text content as "Enjoy! Now you can see your recommendations!" in the Sidebar:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_197:::Trending Route should consist of an HTML paragraph element with text content starting with "Enjoy! Now to see your channels and recommendations!" in the sidebar:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const paragraphEl = await screen.findByText(
-      /Enjoy*. Now you can see your recommendations/i,
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const paragraphEl = screen.getByText(
+      /^Enjoy! Now to see your channels and recommendations!/i,
       {
         hidden: true,
+        exact: false,
       },
     )
     expect(paragraphEl).toBeInTheDocument()
@@ -410,33 +486,30 @@ describe(':::RJSCPYQN94_TEST_SUITE_11:::Trending Route UI tests', () => {
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_194:::Trending Route should consist of an HTML main heading element with text content as "Trending":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_198:::Trending Route should consist of an HTML main heading element with text content as "Trending":::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('heading', {name: /Trending/i}),
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
     ).toBeInTheDocument()
 
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_195:::When the Trending Route is opened, it should initially consist of an HTML container element with testid attribute value as "loader":::5:::', async () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
-    await waitForElementToBeRemoved(() => screen.queryByTestId('loader'))
+    expect(screen.getByRole('heading', {name: /Trending/i})).toBeInTheDocument()
 
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_196:::When the Trending Route is opened, an HTTP GET request should be made to the given Trending Videos API URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_199:::When the Trending Route is opened, an HTTP GET request should be made to trendingVideosApiUrl:::5:::', async () => {
     mockGetCookie()
     const mockFetchFunction = jest.fn().mockImplementation(() => ({
       ok: true,
       json: () => Promise.resolve(videosResponse),
     }))
     window.fetch = mockFetchFunction
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
 
     expect(mockFetchFunction.mock.calls[0][0]).toMatch(
       `${trendingVideosApiUrl}`,
@@ -444,45 +517,26 @@ describe(':::RJSCPYQN94_TEST_SUITE_11:::Trending Route UI tests', () => {
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_197:::When the HTTP GET request in the Trending Route is successful, then the page should consist of at least two HTML unordered list elements to display nav items list, videos list received from the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_200:::When the Trending Route is opened, an HTML container element with data-testid attribute value as "loader" should be displayed while the HTTP GET request is in progress:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-    await waitForElementToBeRemoved(() => screen.queryByTestId('loader'))
+    renderWithBrowserRouter(<App />)
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('loader'))
 
-    const listEls = screen.getAllByRole('list', {hidden: true})
-
-    expect(listEls.length).toBeGreaterThanOrEqual(2)
-    expect(listEls.every(eachEl => eachEl.tagName === 'UL')).toBeTruthy()
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
 
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_198:::When the HTTP GET request in the Trending Route is successful, then the page should consist of HTML paragraph elements with text content as the values of the key "title" received from the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_201:::When the HTTP GET request in the Trending Route is successful, then the page should consist of the HTML image elements with alt attribute value as "video thumbnail" and src equal to the value of the key "thumbnail_url" in each item from the videosResponse:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-
-    const firstParagraphEl = await screen.findByText(
-      videosResponse.videos[0].title,
-      {exact: false},
-    )
-    expect(firstParagraphEl).toBeInTheDocument()
-    expect(firstParagraphEl.tagName).toBe('P')
-
-    const secondParagraphEl = screen.getByText(videosResponse.videos[1].title, {
-      exact: false,
-    })
-    expect(secondParagraphEl).toBeInTheDocument()
-    expect(secondParagraphEl.tagName).toBe('P')
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_199:::When the HTTP GET request in the Trending Route is successful, then the page should consist of the HTML image elements with alt attribute values as "video thumbnail" and src equal to the values of the key "thumbnail_url" received from the videos response:::5:::', async () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     const imageEls = await screen.findAllByRole('img', {
       hidden: true,
       name: /video thumbnail/i,
+      exact: false,
     })
 
     expect(imageEls[0]).toBeInTheDocument()
@@ -494,61 +548,81 @@ describe(':::RJSCPYQN94_TEST_SUITE_11:::Trending Route UI tests', () => {
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_200:::When the HTTP GET request in the Trending Route is successful, then the page should consist of HTML paragraph elements with text content as the values of the key "name" in the channel details received from the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_202:::When the HTTP GET request in the Trending Route is successful, then the page should consist of the HTML Paragraph elements with text content as the value of the key "title" in each item from the videosResponse:::5:::', async () => {
+    mockGetCookie()
+    renderWithBrowserRouter(<App />)
+
+    const storeAwaitFunction = await screen.findByText(
+      videosResponse.videos[0].title,
+      {exact: false},
+    )
+    expect(storeAwaitFunction).toBeInTheDocument()
+    expect(storeAwaitFunction.tagName).toBe('P')
+
+    const storeAwaitFunction2 = await screen.findByText(
+      videosResponse.videos[1].title,
+      {exact: false},
+    )
+    expect(storeAwaitFunction2).toBeInTheDocument()
+    expect(storeAwaitFunction2.tagName).toBe('P')
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_203:::When the HTTP GET request in the Trending Route is successful, then the page should consist of the HTML Paragraph elements with text content as the value of the key "name" in each item from the videosResponse:::5:::', async () => {
     mockGetCookie()
 
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const firstParagraphEl = await screen.findByText(
+    const storeAwaitFunction = await screen.findByText(
       videosResponse.videos[0].channel.name,
       {
         exact: false,
       },
     )
-    expect(firstParagraphEl).toBeInTheDocument()
+    expect(storeAwaitFunction).toBeInTheDocument()
 
-    expect(firstParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction.tagName).toBe('P')
 
-    const secondParagraphEl = screen.getByText(
+    const storeAwaitFunction2 = await screen.findByText(
       videosResponse.videos[1].channel.name,
       {
         exact: false,
       },
     )
 
-    expect(secondParagraphEl).toBeInTheDocument()
-    expect(secondParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction2).toBeInTheDocument()
+    expect(storeAwaitFunction2.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_201:::When the HTTP GET request in the Trending Route is successful, then the page should consist of HTML paragraph elements with text content as the values of the key "view_count" received from the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_204:::When the HTTP GET request in the Trending Route is successful, then the page should consist of the HTML Paragraph elements with text content as the value of the key "view_count" in each item from the videosResponse:::5:::', async () => {
     mockGetCookie()
 
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const firstParagraphEl = await screen.findByText(
+    const storeAwaitFunction = await screen.findByText(
       videosResponse.videos[0].view_count,
       {
         exact: false,
       },
     )
-    expect(firstParagraphEl).toBeInTheDocument()
+    expect(storeAwaitFunction).toBeInTheDocument()
 
-    expect(firstParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction.tagName).toBe('P')
 
-    const secondParagraphEl = screen.getByText(
+    const storeAwaitFunction2 = await screen.findByText(
       videosResponse.videos[1].view_count,
       {
         exact: false,
       },
     )
 
-    expect(secondParagraphEl).toBeInTheDocument()
-    expect(secondParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction2).toBeInTheDocument()
+    expect(storeAwaitFunction2.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_202:::When the HTTP GET request in the Trending Route is successful, then the page should consist of HTML paragraph elements with text content as the values of the key "published_at" received from the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_205:::When the HTTP GET request in the Trending Route is successful, then the page should consist of the HTML Paragraph elements with text content as the value of the key "published_at" in each item from the videosResponse:::5:::', async () => {
     mockGetCookie()
 
     const dateFormatDistance = dateString => {
@@ -567,20 +641,26 @@ describe(':::RJSCPYQN94_TEST_SUITE_11:::Trending Route UI tests', () => {
 
     const formattedDate2 = dateFormatDistance(date2)
 
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const firstParagraphEl = await screen.findByText(
+    const storeAwaitFunction = await screen.findByText(
       new RegExp(`${date1}|${formattedDate1}`),
+      {
+        exact: false,
+      },
     )
-    expect(firstParagraphEl).toBeInTheDocument()
-    expect(firstParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction).toBeInTheDocument()
+    expect(storeAwaitFunction.tagName).toBe('P')
 
-    const secondParagraphEl = screen.getByText(
+    const storeAwaitFunction2 = screen.getByText(
       new RegExp(`${date2}|${formattedDate2}`),
+      {
+        exact: false,
+      },
     )
 
-    expect(secondParagraphEl).toBeInTheDocument()
-    expect(secondParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction2).toBeInTheDocument()
+    expect(storeAwaitFunction2.tagName).toBe('P')
 
     restoreGetCookieFns()
   })

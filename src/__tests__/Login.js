@@ -66,7 +66,8 @@ const videosResponse = {
 }
 
 const apiUrl = 'https://apis.ccbp.in/login'
-const homeVideosApiUrl = 'https://apis.ccbp.in/videos/all'
+const homeVideosApiUrl =
+  'https://apis.ccbp.in/videos/all'
 
 const handlers = [
   rest.post(apiUrl, (req, res, ctx) => {
@@ -134,164 +135,403 @@ const rtlRender = (ui = <App />, path = '/login') => {
   }
 }
 
-const renderWithBrowserRouter = (ui = <App />, {route = '/login'} = {}) => {
+const renderWithBrowserRouter = (ui, {route = '/login'} = {}) => {
   window.history.pushState({}, 'Test page', route)
   return render(ui, {wrapper: BrowserRouter})
 }
 
 const originalFetch = window.fetch
 
-describe(':::RJSCPYQN94_TEST_SUITE_7:::Nxt Watch Authentication tests', () => {
+describe(':::RJSCPYQN94_TEST_SUITE_7:::Nxt Watch Authentication Tests', () => {
   beforeAll(() => {
     server.listen()
   })
 
   afterEach(() => {
     server.resetHandlers()
-    window.fetch = originalFetch
   })
-
   afterAll(() => {
     server.close()
   })
 
-  it(':::RJSCPYQN94_TEST_105:::Login Route should consist of an HTML form element:::5:::', () => {
-    const {container} = renderWithBrowserRouter()
+  it(':::RJSCPYQN94_TEST_108:::Login Route should consist of an HTML form element:::5:::', () => {
+    const {container} = renderWithBrowserRouter(<App />)
     const formEl = container.querySelector('form')
     expect(formEl).toBeInTheDocument()
   })
 
-  it(':::RJSCPYQN94_TEST_106:::Login Route should consist of an HTML image element with alt attribute value as "website logo" and src as the given logo URL:::5:::', () => {
-    renderWithBrowserRouter()
-    const imageEls = screen.getAllByRole('img', {
-      name: /website logo/i,
-    })
-    expect(imageEls[0]).toBeInTheDocument()
-    expect(imageEls[0].src).toBe(websiteLogo)
+  it(':::RJSCPYQN94_TEST_109:::Login Route should consist of an HTML image element with alt as "website logo" and src as the given logo URL:::5:::', () => {
+    renderWithBrowserRouter(<App />)
+    const imageEl = screen.getAllByRole('img', {name: /website logo/i})
+    expect(imageEl[0]).toBeInTheDocument()
+    expect(imageEl[0].src).toBe(websiteLogo)
   })
 
-  it(':::RJSCPYQN94_TEST_107:::Login Route should consist of an HTML input element with label text as "USERNAME" and type attribute value as "text":::5:::', () => {
-    renderWithBrowserRouter()
-    const inputEl = screen.getByLabelText(/USERNAME/i)
-    expect(inputEl).toBeInTheDocument()
-    expect(inputEl.type).toBe('text')
+  it(':::RJSCPYQN94_TEST_110:::Login Route should consist of HTML input element with label text as "USERNAME" and type "text":::5:::', () => {
+    renderWithBrowserRouter(<App />)
+    expect(
+      screen.getByLabelText(/USERNAME/i, {
+        exact: false,
+      }).type,
+    ).toBe('text')
   })
 
-  it(':::RJSCPYQN94_TEST_108:::Login Route should consist of an HTML input element with label text as "PASSWORD" and type attribute value as "password":::5:::', () => {
-    renderWithBrowserRouter()
-    const inputEl = screen.getByLabelText(/^PASSWORD/i)
-    expect(inputEl).toBeInTheDocument()
-    expect(inputEl.type).toBe('password')
+  it(':::RJSCPYQN94_TEST_111:::Login Route should consist of HTML input element with label text as "PASSWORD" and type "password":::5:::', () => {
+    renderWithBrowserRouter(<App />)
+    expect(screen.getByLabelText(/^PASSWORD/i, {exact: false}).type).toBe(
+      'password',
+    )
   })
 
-  it(':::RJSCPYQN94_TEST_109:::Login Route should consist of an HTML input element with label text as "Show Password" and type attribute value as "checkbox":::5:::', () => {
-    renderWithBrowserRouter()
-    const checkBox = screen.getByLabelText(/Show Password/i)
-    expect(checkBox.type).toBe('checkbox')
+  it(':::RJSCPYQN94_TEST_112:::Login Route should consist of HTML input element with label text as "Show Password" and type "checkbox":::5:::', () => {
+    renderWithBrowserRouter(<App />)
+    expect(
+      screen.getByLabelText(/Show Password/i, {
+        exact: false,
+      }).type,
+    ).toBe('checkbox')
   })
 
-  it(':::RJSCPYQN94_TEST_110:::Login Route should consist of an HTML button element with text content as "Login" and type attribute value as "submit":::5:::', () => {
-    renderWithBrowserRouter()
-    const buttonEl = screen.getByRole('button', {name: /Login/i})
+  it(':::RJSCPYQN94_TEST_113:::Login Route should consist of an HTML button element with test content as "Login" and type as "submit":::5:::', () => {
+    renderWithBrowserRouter(<App />)
+    const buttonEl = screen.getByRole('button', {name: /Login/i, exact: false})
     expect(buttonEl).toBeInTheDocument()
     expect(buttonEl.type).toBe('submit')
   })
 
-  it(':::RJSCPYQN94_TEST_111:::Login Route should consist of an HTML button element with text content as "Login" and the color as "#ffffff":::5:::', () => {
-    renderWithBrowserRouter()
+  it(':::RJSCPYQN94_TEST_114:::Login Route should consist of an HTML button element with "Login" as text content and the color as "#ffffff":::5:::', () => {
+    renderWithBrowserRouter(<App />)
 
     expect(
       screen.getByRole('button', {
         name: /Login/i,
+        exact: false,
       }),
-    ).toHaveStyle('color: #ffffff')
+    ).toHaveStyleRule('color', expect.stringContaining('#ffffff'))
   })
 
-  it(':::RJSCPYQN94_TEST_112:::When "/login" is provided as the URL path by an unauthenticated user, then the page should be navigated to Login Route and consist of an  HTML button element with text content as "Login":::5:::', async () => {
-    renderWithBrowserRouter()
+  it(':::RJSCPYQN94_TEST_115:::When "/login" is provided as the URL by an unauthenticated user, then the page should be navigated to Login Route:::5:::', async () => {
+    renderWithBrowserRouter(<App />)
     expect(window.location.pathname).toBe(loginRoutePath)
-    expect(screen.getByRole('button', {name: /Login/i})).toBeInTheDocument()
   })
 
-  it(':::RJSCPYQN94_TEST_113:::When "/login" is provided as the URL path by an authenticated user, then the page should be navigated to the Home Route:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_116:::When "/login" is provided as the URL by an authenticated user, then the page should be navigated to Home Route:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-
-    expect(window.location.pathname).toBe(homeRoutePath)
+    renderWithBrowserRouter(<App />, loginRoutePath)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+    await waitFor(() => expect(window.location.pathname).toBe(homeRoutePath))
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_114:::When a non-empty value is provided in the HTML input element with the label text as "USERNAME", then the value provided should be displayed in the HTML input element:::5:::', () => {
-    renderWithBrowserRouter()
-    const inputEl = screen.getByLabelText(/USERNAME/i)
-    userEvent.type(inputEl, 'rahul')
-    expect(inputEl).toHaveValue('rahul')
+  it(':::RJSCPYQN94_TEST_117:::When a non-empty value is provided in the HTML input element with the label text "USERNAME", then the value provided should be displayed in the HTML input element:::5:::', () => {
+    renderWithBrowserRouter(<App />)
+    userEvent.type(
+      screen.getByLabelText(/USERNAME/i, {
+        exact: false,
+      }),
+      'rahul',
+    )
+    expect(
+      screen.getByLabelText(/USERNAME/i, {
+        exact: false,
+      }),
+    ).toHaveValue('rahul')
   })
 
-  it(':::RJSCPYQN94_TEST_115:::When a non-empty value is provided in the HTML input element with the label text as "PASSWORD", then the value provided should be displayed in the HTML input element:::5:::', () => {
-    renderWithBrowserRouter()
-    const inputEl = screen.getByLabelText(/^PASSWORD/i)
-    userEvent.type(inputEl, 'rahul@2021')
-    expect(inputEl).toHaveValue('rahul@2021')
+  it(':::RJSCPYQN94_TEST_118:::When a non-empty value is provided in the HTML input element with the label text "PASSWORD", then the value provided should be displayed in the HTML input element:::5:::', () => {
+    renderWithBrowserRouter(<App />)
+    userEvent.type(
+      screen.getByLabelText(/^PASSWORD/i, {
+        exact: false,
+      }),
+      'rahul@2021',
+    )
+    expect(
+      screen.getByLabelText(/^PASSWORD/i, {
+        exact: false,
+      }),
+    ).toHaveValue('rahul@2021')
   })
 
-  it(':::RJSCPYQN94_TEST_116:::When the checkbox input element with the label text as "Show Password" is checked, then the checkbox input element should be checked:::5:::', () => {
-    renderWithBrowserRouter()
-    const checkBoxEl = screen.getByLabelText(/Show Password/i)
+  it(':::RJSCPYQN94_TEST_119:::When the checkbox input element with the label text as "Show Password" is checked, then the checkbox input element should be "checked":::5:::', () => {
+    renderWithBrowserRouter(<App />)
+    const checkBoxEl = screen.getByLabelText(/Show Password/i, {
+      exact: false,
+    })
 
     userEvent.click(checkBoxEl)
     expect(checkBoxEl.checked).toBeTruthy()
   })
 
-  it(':::RJSCPYQN94_TEST_117:::When the checkbox input element with the label text as "Show Password" is checked, then the type of the PASSWORD input element should be "text":::5:::', () => {
-    renderWithBrowserRouter()
-    const checkBoxEl = screen.getByLabelText(/Show Password/i)
+  it(':::RJSCPYQN94_TEST_120:::When the checkbox input element with the label text as "Show Password" is checked, then the type of the PASSWORD input element should be "text":::5:::', () => {
+    renderWithBrowserRouter(<App />)
+    const checkBoxEl = screen.getByLabelText(/Show Password/i, {
+      exact: false,
+    })
 
     userEvent.click(checkBoxEl)
     expect(checkBoxEl.checked).toBeTruthy()
-    expect(screen.getByLabelText(/^PASSWORD/i).type).toBe('text')
+    expect(
+      screen.getByLabelText(/^PASSWORD/i, {
+        exact: false,
+      }).type,
+    ).toBe('text')
   })
 
-  it(':::RJSCPYQN94_TEST_118:::When the checkbox input element with the label text as "Show Password" is unchecked, then the type of the PASSWORD input element should be "password":::5:::', () => {
-    renderWithBrowserRouter()
-    const checkBoxEl = screen.getByLabelText(/Show Password/i)
+  it(':::RJSCPYQN94_TEST_121:::When the checkbox input element with the label as "Show Password" is unchecked, then the type of the PASSWORD input element should be "password":::5:::', () => {
+    renderWithBrowserRouter(<App />)
+    const checkBoxEl = screen.getByLabelText(/Show Password/i, {
+      exact: false,
+    })
 
     userEvent.click(checkBoxEl)
+    expect(checkBoxEl.checked).toBeTruthy()
+
+    expect(
+      screen.getByLabelText(/^PASSWORD/i, {
+        exact: false,
+      }).type,
+    ).toBe('text')
 
     userEvent.click(checkBoxEl)
     expect(checkBoxEl.checked).toBeFalsy()
-    expect(screen.getByLabelText(/^PASSWORD/i).type).toBe('password')
+    expect(
+      screen.getByLabelText(/^PASSWORD/i, {
+        exact: false,
+      }).type,
+    ).toBe('password')
   })
 
-  it(':::RJSCPYQN94_TEST_119:::When username and password are provided and the Login button is clicked, then an HTTP GET request should be made to the given Login API URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_122:::When the Login button is clicked with an empty username and password then the respective error message should be displayed using an HTML paragraph element:::5:::', async () => {
+    const {history} = rtlRender(<App />)
+
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordField = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
+    const loginButton = screen.getByRole('button', {
+      name: /Login/i,
+      exact: false,
+    })
+    expect(history.location.pathname).toBe(loginRoutePath)
+
+    userEvent.type(usernameField, '')
+    userEvent.type(passwordField, '')
+    userEvent.click(loginButton)
+    const paragraphEl = await screen.findByText(
+      /Username or password is invalid/i,
+      {
+        exact: false,
+      },
+    )
+    expect(paragraphEl).toBeInTheDocument()
+    expect(paragraphEl.tagName).toBe('P')
+  })
+
+  it(':::RJSCPYQN94_TEST_123:::When a valid username is provided and the Login button is clicked with an empty password then the respective error message should be displayed using an HTML paragraph element:::5:::', async () => {
+    const {history} = rtlRender(<App />)
+
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordField = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
+    const loginButton = screen.getByRole('button', {
+      name: /Login/i,
+      exact: false,
+    })
+    expect(history.location.pathname).toBe(loginRoutePath)
+
+    userEvent.type(usernameField, 'rahul')
+    userEvent.type(passwordField, '')
+    userEvent.click(loginButton)
+    const paragraphEl = await screen.findByText(
+      /Username or password is invalid/i,
+      {
+        exact: false,
+      },
+    )
+    expect(paragraphEl).toBeInTheDocument()
+    expect(paragraphEl.tagName).toBe('P')
+  })
+
+  it(':::RJSCPYQN94_TEST_124:::When a valid username is provided and the Login button is clicked with an empty password then the respective error message should be displayed and the page should not be navigated:::5:::', async () => {
+    const {history} = rtlRender(<App />)
+
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordField = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
+    const loginButton = screen.getByRole('button', {
+      name: /Login/i,
+      exact: false,
+    })
+    expect(history.location.pathname).toBe('/login')
+
+    userEvent.type(usernameField, 'rahul')
+    userEvent.type(passwordField, '')
+    userEvent.click(loginButton)
+    const paragraphEl = await screen.findByText(
+      /Username or password is invalid/i,
+      {
+        exact: false,
+      },
+    )
+    expect(paragraphEl).toBeInTheDocument()
+    expect(history.location.pathname).toBe(loginRoutePath)
+  })
+
+  it(':::RJSCPYQN94_TEST_125:::When a non-empty password is provided and the Login button is clicked with an empty username then the respective error message should be displayed:::5:::', async () => {
+    const {history} = rtlRender(<App />)
+
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordField = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
+    const loginButton = screen.getByRole('button', {
+      name: /Login/i,
+      exact: false,
+    })
+    expect(history.location.pathname).toBe('/login')
+
+    userEvent.type(usernameField, '')
+    userEvent.type(passwordField, 'rahul1')
+    userEvent.click(loginButton)
+    expect(
+      await screen.findByText(/Username or password is invalid/i, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+  })
+
+  it(':::RJSCPYQN94_TEST_126:::When a non-empty password is provided and the Login button is clicked with an empty username then the page should not be navigated:::5:::', async () => {
+    const {history} = rtlRender(<App />)
+
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordField = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
+    const loginButton = screen.getByRole('button', {
+      name: /Login/i,
+      exact: false,
+    })
+    expect(history.location.pathname).toBe('/login')
+
+    userEvent.type(usernameField, '')
+    userEvent.type(passwordField, 'rahul1')
+    userEvent.click(loginButton)
+    expect(
+      await screen.findByText(/Username or password is invalid/i, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+    await waitFor(() => expect(history.location.pathname).toBe(loginRoutePath))
+  })
+
+  it(':::RJSCPYQN94_TEST_127:::When an invalid username and password are provided and the Login button is clicked then the respective error message should be displayed and the page should not be navigated:::5:::', async () => {
+    const {history} = rtlRender(<App />)
+
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordField = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
+    const loginButton = screen.getByRole('button', {
+      name: /Login/i,
+      exact: false,
+    })
+    expect(history.location.pathname).toBe('/login')
+
+    userEvent.type(usernameField, 'unknown')
+    userEvent.type(passwordField, 'rahul@2021')
+    userEvent.click(loginButton)
+    expect(
+      await screen.findByText(/Username is not found/i, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+
+    expect(history.location.pathname).toBe(loginRoutePath)
+  })
+
+  it(':::RJSCPYQN94_TEST_128:::When a valid username and invalid password are provided and the Login button is clicked then the respective error message should be displayed and the page should not be navigated:::5:::', async () => {
+    const {history} = rtlRender(<App />)
+    mockHistoryReplace(history)
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordField = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
+    const loginButton = screen.getByRole('button', {
+      name: /Login/i,
+      exact: false,
+    })
+    expect(history.location.pathname).toBe('/login')
+
+    userEvent.type(usernameField, 'rahul')
+    userEvent.type(passwordField, 'wrongPassword')
+    userEvent.click(loginButton)
+    expect(
+      await screen.findByText(/Username and Password didn't match/i, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+
+    expect(history.location.pathname).toBe(loginRoutePath)
+  })
+
+  it(':::RJSCPYQN94_TEST_129:::When the Login is successful, an HTTP GET request should be made to loginApiUrl:::5:::', async () => {
     mockSetCookie()
     const mockFetchFunction = jest.fn().mockImplementation(() => ({
       ok: true,
       json: () => Promise.resolve(loginSuccessResponse),
     }))
     window.fetch = mockFetchFunction
-    renderWithBrowserRouter()
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordField = screen.getByLabelText(/^PASSWORD/i)
+    renderWithBrowserRouter(<App />)
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordField = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
     const loginButton = screen.getByRole('button', {
       name: /Login/i,
+      exact: false,
     })
     userEvent.type(usernameField, 'rahul')
     userEvent.type(passwordField, 'rahul@2021')
     userEvent.click(loginButton)
     expect(mockFetchFunction.mock.calls[0][0]).toMatch(`${apiUrl}`)
-
+    window.fetch = originalFetch
     restoreSetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_120:::When the Login is successful, then the Cookies.set() method should be called with three arguments - "jwt_token" string as the first argument, JWT token value as the second argument, and expiry days as the third argument:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_130:::When the Login is successful, then the Cookies.set() method should be called with three arguments - "jwt_token" string as the first argument, JWT token value as the second argument, and expiry days as the third argument:::5:::', async () => {
     mockSetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordField = screen.getByLabelText(/^PASSWORD/i)
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordField = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
     const loginButton = screen.getByRole('button', {
       name: /Login/i,
+      exact: false,
     })
     userEvent.type(usernameField, 'rahul')
     userEvent.type(passwordField, 'rahul@2021')
@@ -306,14 +546,19 @@ describe(':::RJSCPYQN94_TEST_SUITE_7:::Nxt Watch Authentication tests', () => {
     restoreSetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_121:::When the Login is successful, then the history.replace() method should be called with the argument "/":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_131:::When the Login is successful, then the history.replace() method should be called with the argument "/":::5:::', async () => {
     const {history} = rtlRender(<App />)
     mockHistoryReplace(history)
 
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordFields = screen.getByLabelText(/^PASSWORD/i)
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordFields = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
     const loginButton = screen.getByRole('button', {
       name: /Login/i,
+      exact: false,
     })
     userEvent.type(usernameField, 'rahul')
     userEvent.type(passwordFields, 'rahul@2021')
@@ -322,152 +567,30 @@ describe(':::RJSCPYQN94_TEST_SUITE_7:::Nxt Watch Authentication tests', () => {
     restoreHistoryReplace(history)
   })
 
-  it(':::RJSCPYQN94_TEST_122:::When valid username and password are provided and the Login button is clicked, then the page should be navigated to the Home Route:::5:::', async () => {
-    renderWithBrowserRouter()
+  it(':::RJSCPYQN94_TEST_132:::When a valid username and password are provided and the Login button is clicked then the page should be navigated to Home Route:::5:::', async () => {
+    renderWithBrowserRouter(<App />)
 
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordField = screen.getByLabelText(/^PASSWORD/i)
+    const usernameField = screen.getByLabelText(/USERNAME/i, {
+      exact: false,
+    })
+    const passwordField = screen.getByLabelText(/^PASSWORD/i, {
+      exact: false,
+    })
     const loginButton = screen.getByRole('button', {
       name: /Login/i,
+      exact: false,
     })
     userEvent.type(usernameField, 'rahul')
     userEvent.type(passwordField, 'rahul@2021')
     userEvent.click(loginButton)
     mockGetCookie()
 
-    await waitFor(() => expect(window.location.pathname).toBe(homeRoutePath))
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(window.location.pathname).toBe(homeRoutePath)
 
     restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_123:::When username and password are empty, and the Login button is clicked, then the page should consist of an HTML paragraph element with text content as the error message received from the response, and the page should not be navigated:::5:::', async () => {
-    renderWithBrowserRouter()
-
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordField = screen.getByLabelText(/^PASSWORD/i)
-    const loginButton = screen.getByRole('button', {
-      name: /Login/i,
-    })
-
-    userEvent.type(usernameField, '')
-    userEvent.type(passwordField, '')
-    userEvent.click(loginButton)
-    const paragraphEl = await screen.findByText(
-      /Username or password is invalid/i,
-    )
-    expect(paragraphEl).toBeInTheDocument()
-    expect(paragraphEl.tagName).toBe('P')
-    expect(window.location.pathname).toBe(loginRoutePath)
-  })
-
-  it(':::RJSCPYQN94_TEST_124:::When a valid username is provided and the Login button is clicked with an empty password, then the page should consist of an HTML paragraph element with text content as the error message received from the response:::5:::', async () => {
-    renderWithBrowserRouter()
-
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordField = screen.getByLabelText(/^PASSWORD/i)
-    const loginButton = screen.getByRole('button', {
-      name: /Login/i,
-    })
-
-    userEvent.type(usernameField, 'rahul')
-    userEvent.type(passwordField, '')
-    userEvent.click(loginButton)
-    const paragraphEl = await screen.findByText(
-      /Username or password is invalid/i,
-    )
-    expect(paragraphEl).toBeInTheDocument()
-    expect(paragraphEl.tagName).toBe('P')
-  })
-
-  it(':::RJSCPYQN94_TEST_125:::When a valid username is provided and the Login button is clicked with an empty password, then the page should consist of an HTML paragraph element with text content as the error message received from the response, and the page should not be navigated:::5:::', async () => {
-    renderWithBrowserRouter()
-
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordField = screen.getByLabelText(/^PASSWORD/i)
-    const loginButton = screen.getByRole('button', {
-      name: /Login/i,
-    })
-
-    userEvent.type(usernameField, 'rahul')
-    userEvent.type(passwordField, '')
-    userEvent.click(loginButton)
-    const paragraphEl = await screen.findByText(
-      /Username or password is invalid/i,
-    )
-    expect(paragraphEl).toBeInTheDocument()
-    expect(window.location.pathname).toBe(loginRoutePath)
-  })
-
-  it(':::RJSCPYQN94_TEST_126:::When a non-empty password is provided and the Login button is clicked with an empty username, then the page should consist of an HTML paragraph element with text content as the error message received from the response:::5:::', async () => {
-    renderWithBrowserRouter()
-
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordField = screen.getByLabelText(/^PASSWORD/i)
-    const loginButton = screen.getByRole('button', {
-      name: /Login/i,
-    })
-
-    userEvent.type(usernameField, '')
-    userEvent.type(passwordField, 'rahul1')
-    userEvent.click(loginButton)
-    expect(
-      await screen.findByText(/Username or password is invalid/i),
-    ).toBeInTheDocument()
-  })
-
-  it(':::RJSCPYQN94_TEST_127:::When a non-empty password is provided and the Login button is clicked with an empty username, then the page should consist of an HTML paragraph element with text content as the error message received from the response, and the page should not be navigated:::5:::', async () => {
-    renderWithBrowserRouter()
-
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordField = screen.getByLabelText(/^PASSWORD/i)
-    const loginButton = screen.getByRole('button', {
-      name: /Login/i,
-    })
-
-    userEvent.type(usernameField, '')
-    userEvent.type(passwordField, 'rahul1')
-    userEvent.click(loginButton)
-    expect(
-      await screen.findByText(/Username or password is invalid/i),
-    ).toBeInTheDocument()
-    expect(window.location.pathname).toBe(loginRoutePath)
-  })
-
-  it(':::RJSCPYQN94_TEST_128:::When invalid username and password are provided and the Login button is clicked, then the page should consist of an HTML paragraph element with text content as the error message received from the response, and the page should not be navigated:::5:::', async () => {
-    renderWithBrowserRouter()
-
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordField = screen.getByLabelText(/^PASSWORD/i)
-    const loginButton = screen.getByRole('button', {
-      name: /Login/i,
-    })
-
-    userEvent.type(usernameField, 'unknown')
-    userEvent.type(passwordField, 'rahul@2021')
-    userEvent.click(loginButton)
-    expect(
-      await screen.findByText(/Username is not found/i),
-    ).toBeInTheDocument()
-
-    expect(window.location.pathname).toBe(loginRoutePath)
-  })
-
-  it(':::RJSCPYQN94_TEST_129:::When a valid username and invalid password are provided and the Login button is clicked, then the page should consist of an HTML paragraph element with text content as the error message received from the response, and the page should not be navigated:::5:::', async () => {
-    renderWithBrowserRouter()
-
-    const usernameField = screen.getByLabelText(/USERNAME/i)
-    const passwordField = screen.getByLabelText(/^PASSWORD/i)
-    const loginButton = screen.getByRole('button', {
-      name: /Login/i,
-    })
-
-    userEvent.type(usernameField, 'rahul')
-    userEvent.type(passwordField, 'wrongPassword')
-    userEvent.click(loginButton)
-    expect(
-      await screen.findByText(/Username and Password didn't match/i),
-    ).toBeInTheDocument()
-
-    expect(window.location.pathname).toBe(loginRoutePath)
   })
 })

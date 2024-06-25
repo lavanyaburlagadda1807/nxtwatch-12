@@ -82,29 +82,28 @@ const handlers = [
 ]
 
 const server = setupServer(...handlers)
-const originalFetch = window.fetch
 
-describe(':::RJSCPYQN94_TEST_SUITE_17:::React Player tests', () => {
+describe(':::RJSCPYQN94_TEST_SUITE_17:::React Player Tests', () => {
   beforeAll(() => {
     server.listen()
   })
 
   afterEach(() => {
     server.resetHandlers()
-    window.fetch = originalFetch
   })
 
   afterAll(() => {
     server.close()
   })
 
-  it(':::RJSCPYQN94_TEST_269:::When the HTTP GET request in the Video Item Details Route is successful, then the page should consist of ReactPlayer from react-player:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_270:::When the HTTP GET request in the VideoItemDetails Route is successful, then the page should consist of React Player and url prop should be equal to the value of the key "video_url" in each item from the videoDetailsResponse:::5:::', async () => {
     mockGetCookie()
     window.history.pushState(
       {},
       'Test page',
       '/videos/802fcd20-1490-43c5-9e66-ce6dfefb40d1',
     )
+    const originalFetch = window.fetch
     const mockFetchFunction = jest.fn().mockImplementation(() =>
       Promise.resolve({
         status: 200,
@@ -127,39 +126,7 @@ describe(':::RJSCPYQN94_TEST_SUITE_17:::React Player tests', () => {
 
     expect(wrapper.find(ReactPlayer)).toHaveLength(1)
 
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_270:::When the HTTP GET request in the Video Item Details Route is successful, then the page should consist of ReactPlayer from react-player and url prop should be equal to the value of the key "video_url" received from the video details response:::5:::', async () => {
-    mockGetCookie()
-    window.history.pushState(
-      {},
-      'Test page',
-      '/videos/802fcd20-1490-43c5-9e66-ce6dfefb40d1',
-    )
-    const mockFetchFunction = jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        status: 200,
-        ok: true,
-        json: () => Promise.resolve(videoDetailsResponse),
-      }),
-    )
-    window.fetch = mockFetchFunction
-
-    const wrapper = mount(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>,
-    )
-
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0))
-    })
-    await wrapper.update()
-
-    expect(wrapper.find(ReactPlayer).props().url).toBe(
-      videoDetailsResponse.video_details.video_url,
-    )
+    window.fetch = originalFetch
     restoreGetCookieFns()
   })
 })

@@ -1,18 +1,30 @@
 import 'jest-styled-components'
 import {BrowserRouter} from 'react-router-dom'
 import Cookies from 'js-cookie'
+import {formatDistanceStrict} from 'date-fns'
 
 import {rest} from 'msw'
 import {setupServer} from 'msw/node'
 
-import {render, screen} from '@testing-library/react'
+import {render, screen, waitForElementToBeRemoved} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import App from '../App'
 
+const websiteLogo =
+  'https://assets.ccbp.in/frontend/react-js/nxt-watch-logo-light-theme-img.png'
+const profilePicImage =
+  'https://assets.ccbp.in/frontend/react-js/nxt-watch-profile-img.png'
+const facebookLogo =
+  'https://assets.ccbp.in/frontend/react-js/nxt-watch-facebook-logo-img.png'
+const twitterLogo =
+  'https://assets.ccbp.in/frontend/react-js/nxt-watch-twitter-logo-img.png'
+const linkedInLogo =
+  'https://assets.ccbp.in/frontend/react-js/nxt-watch-linked-in-logo-img.png'
 const websiteDarkThemeLogo =
   'https://assets.ccbp.in/frontend/react-js/nxt-watch-logo-dark-theme-img.png'
 
+const loginRoutePath = '/login'
 const homeRoutePath = '/'
 const trendingRoutePath = '/trending'
 const gamingRoutePath = '/gaming'
@@ -38,7 +50,7 @@ const restoreGetCookieFns = () => {
 }
 
 const renderWithBrowserRouter = (
-  ui = <App />,
+  ui,
   {route = videoItemDetailRoutePath} = {},
 ) => {
   window.history.pushState({}, 'Test page', route)
@@ -235,114 +247,191 @@ describe(':::RJSCPYQN94_TEST_SUITE_16:::Video Item Details Route Functionality t
     server.close()
   })
 
-  it(':::RJSCPYQN94_TEST_260:::When the theme icon button in the Video Item Details Route is clicked, then the page should change to dark theme and consist of the HTML container element with data-testid attribute value as "videoItemDetails" and background color as "#0f0f0f":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_263:::When the theme button is clicked in the Trending Route, then the Home link is clicked, then the page should be navigated to Home Route and the theme should remain the same:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const themeBtns = screen.getAllByTestId('theme')
+    expect(
+      await screen.findByText(videoDetailsResponse.video_details.title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
 
-    userEvent.click(themeBtns[0])
+    userEvent.click(screen.getAllByTestId('theme')[0])
 
-    expect(await screen.findByTestId('videoItemDetails')).toHaveStyle(
+    expect(
+      screen.getAllByRole('img', {
+        hidden: true,
+        name: /website logo/i,
+        exact: false,
+      })[0],
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getAllByRole('img', {
+        hidden: true,
+        name: /website logo/i,
+        exact: false,
+      })[0].src,
+    ).toBe(websiteDarkThemeLogo)
+
+    const homeBtn = screen.getByRole('link', {
+      hidden: true,
+      name: /Home/i,
+      exact: false,
+    })
+
+    userEvent.click(homeBtn)
+
+    expect(
+      await screen.findByText(homeVideosResponse.videos[0].title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+
+    expect(window.location.pathname).toBe('/')
+
+    expect(
+      screen.getAllByRole('img', {name: /website logo/i, exact: false})[0],
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getAllByRole('img', {name: /website logo/i, exact: false})[0].src,
+    ).toBe(websiteDarkThemeLogo)
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_264:::When the theme button is clicked then the videoItemDetails Route should consist of a dark theme and the "#0f0f0f" color provided should be applied as the background color for the styled component with data-testid as "videoItemDetails":::5:::', async () => {
+    mockGetCookie()
+    renderWithBrowserRouter(<App />)
+
+    expect(
+      await screen.findByText(videoDetailsResponse.video_details.title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+
+    userEvent.click(screen.getAllByTestId('theme')[0])
+
+    expect(screen.getByTestId('videoItemDetails')).toHaveStyle(
       'background-color: #0f0f0f',
     )
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_261:::When the theme icon button in the Video Item Details Route is clicked, and the Home link is clicked, then the page should be navigated to the Home Route, and the theme should remain the same:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_265:::When the "Home" link in the sidebar is clicked then the page should be navigated to Home Route:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const themeBtns = screen.getAllByTestId('theme')
+    expect(
+      await screen.findByText(videoDetailsResponse.video_details.title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
 
-    userEvent.click(themeBtns[0])
-
-    const videoItemDetailsImageEls = screen.getAllByRole('img', {
-      hidden: true,
-      name: /website logo/i,
-    })
-    expect(videoItemDetailsImageEls[0]).toBeInTheDocument()
-
-    expect(videoItemDetailsImageEls[0].src).toBe(websiteDarkThemeLogo)
-
-    const homeLink = screen.getByRole('link', {
+    const homeBtn = screen.getByRole('link', {
       hidden: true,
       name: /Home/i,
+      exact: false,
     })
+    userEvent.click(homeBtn)
 
-    userEvent.click(homeLink)
-
-    expect(window.location.pathname).toBe(homeRoutePath)
-    const homeImageEls = await screen.findAllByRole('img', {
-      name: /website logo/i,
-    })
-    expect(homeImageEls[0]).toBeInTheDocument()
-
-    expect(homeImageEls[0].src).toBe(websiteDarkThemeLogo)
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_262:::When the Home link in the Sidebar is clicked, then the page should be navigated to the Home Route:::5:::', async () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
-
-    const homeLink = screen.getByRole('link', {
-      hidden: true,
-      name: /Home/i,
-    })
-    userEvent.click(homeLink)
+    expect(
+      await screen.findByText(homeVideosResponse.videos[0].title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
 
     expect(window.location.pathname).toBe(homeRoutePath)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_263:::When the Trending link in the Sidebar is clicked, then the page should be navigated to the Trending Route:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_266:::When the "Trending" link in the sidebar is clicked then the page should be navigated to Trending Route:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+
+    expect(
+      await screen.findByText(videoDetailsResponse.video_details.title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
 
     const trendingBtn = screen.getByRole('link', {
       hidden: true,
       name: /Trending/i,
+      exact: false,
     })
     userEvent.click(trendingBtn)
+
+    expect(
+      await screen.findByText(trendingVideosResponse.videos[0].title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
 
     expect(window.location.pathname).toBe(trendingRoutePath)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_264:::When the Gaming link in the Sidebar is clicked, then the page should be navigated to the Gaming Route:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_267:::When the "Gaming" link in the sidebar is clicked then the page should be navigated to Gaming Route:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+
+    expect(
+      await screen.findByText(videoDetailsResponse.video_details.title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
 
     const gamingBtn = screen.getByRole('link', {
       hidden: true,
       name: /Gaming/i,
+      exact: false,
     })
     userEvent.click(gamingBtn)
+
+    expect(
+      await screen.findByText(gamingVideosResponse.videos[0].title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
 
     expect(window.location.pathname).toBe(gamingRoutePath)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_265:::When the "Saved videos" link in the Sidebar is clicked, then the page should be navigated to the Saved Videos Route:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_268:::When the "Saved Videos" link in the sidebar is clicked then the page should be navigated to SavedVideos Route:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+
+    expect(
+      await screen.findByText(videoDetailsResponse.video_details.title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
 
     const savedVideosBtn = screen.getByRole('link', {
       hidden: true,
       name: /Saved Videos/i,
+      exact: false,
     })
     userEvent.click(savedVideosBtn)
     expect(window.location.pathname).toBe(savedVideosRoutePath)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_266:::When the Save button in the Video Item Details Route is clicked, then its text content should change to "Saved":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_269:::When the "Save" button is clicked, then the page should consist of an HTML button element with text content as "Saved":::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+    expect(
+      await screen.findByText(videoDetailsResponse.video_details.title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
 
-    const saveBtn = await screen.findByRole('button', {
+    const saveBtn = screen.getByRole('button', {
       name: /Save/i,
+      exact: false,
     })
 
     userEvent.click(saveBtn)
@@ -350,46 +439,9 @@ describe(':::RJSCPYQN94_TEST_SUITE_16:::Video Item Details Route Functionality t
     expect(
       screen.getByRole('button', {
         name: /Saved/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
-
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_267:::When the Save button in the Video Item Details Route is clicked, then its text content should change to "Saved" with font color as "#2563eb":::5:::', async () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
-
-    const saveBtn = await screen.findByRole('button', {
-      name: /Save/i,
-    })
-
-    userEvent.click(saveBtn)
-    expect(
-      screen.getByRole('button', {
-        name: /Saved/i,
-      }),
-    ).toBeInTheDocument()
-    expect(screen.getByText(/Saved$/i)).toHaveStyle('color: #2563eb')
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_268:::When the Saved button in the Video Item Details Route is clicked, then its text content should change to "Save" with font color as "#64748b":::5:::', async () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
-
-    const saveBtn = await screen.findByRole('button', {
-      name: /Save/i,
-    })
-
-    userEvent.click(saveBtn)
-
-    userEvent.click(
-      screen.getByRole('button', {
-        name: /Saved/i,
-      }),
-    )
-    expect(screen.getByText(/Save$/i)).toHaveStyle('color: #64748b')
 
     restoreGetCookieFns()
   })

@@ -60,10 +60,7 @@ const rtlRender = (ui = <App />, path = '/saved-videos') => {
   }
 }
 
-const renderWithBrowserRouter = (
-  ui = <App />,
-  {route = '/saved-videos'} = {},
-) => {
+const renderWithBrowserRouter = (ui, {route = '/saved-videos'} = {}) => {
   window.history.pushState({}, 'Test page', route)
   return render(ui, {wrapper: BrowserRouter})
 }
@@ -200,9 +197,13 @@ const server = setupServer(...handlers)
 const originalConsoleError = console.error
 const originalFetch = window.fetch
 
-describe(':::RJSCPYQN94_TEST_SUITE_10:::Saved Videos Route Functionality tests', () => {
+describe(':::RJSCPYQN94_TEST_SUITE_10:::SavedVideos Route Functionality tests', () => {
   beforeAll(() => {
     server.listen()
+  })
+
+  afterAll(() => {
+    server.close()
   })
 
   afterEach(() => {
@@ -211,195 +212,165 @@ describe(':::RJSCPYQN94_TEST_SUITE_10:::Saved Videos Route Functionality tests',
     window.fetch = originalFetch
   })
 
-  afterAll(() => {
-    server.close()
-  })
-
-  it(':::RJSCPYQN94_TEST_163:::When the Home link in the Sidebar is clicked, then the page should be navigated to the Home Route:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_166:::When the theme button is clicked then the SavedVideos Route should consist of an HTML image element in the Header with alt attribute value as "website logo" and src as given dark theme logo URL:::5:::', () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-
-    const homeLink = screen.getByRole('link', {
-      hidden: true,
-      name: /Home/i,
-    })
-    userEvent.click(homeLink)
-
-    expect(window.location.pathname).toBe(homeRoutePath)
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_164:::When the Trending link in the Sidebar is clicked, then the page should be navigated to the Trending Route:::5:::', async () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
-
-    const trendingLink = screen.getByRole('link', {
-      hidden: true,
-      name: /Trending/i,
-    })
-    userEvent.click(trendingLink)
-
-    expect(window.location.pathname).toBe(trendingRoutePath)
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_165:::When the Gaming link in the Sidebar is clicked, then the page should be navigated to the Gaming Route:::5:::', async () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
-
-    const gamingLink = screen.getByRole('link', {
-      hidden: true,
-      name: /Gaming/i,
-    })
-    userEvent.click(gamingLink)
-
-    expect(window.location.pathname).toBe(gamingRoutePath)
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_166:::When the theme icon button in the Saved Videos Route is clicked, then the page should consist of an HTML image element in the Header with alt attribute value as "website logo" and src as given dark theme logo URL:::5:::', () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     userEvent.click(screen.getAllByTestId('theme')[0])
 
-    const imageEls = screen.getAllByRole('img', {
-      name: /website logo/i,
-      exact: false,
-    })
+    expect(
+      screen.getAllByRole('img', {name: /website logo/i, exact: false})[0],
+    ).toBeInTheDocument()
 
-    expect(imageEls[0]).toBeInTheDocument()
-
-    expect(imageEls[0].src).toBe(websiteDarkThemeLogo)
+    expect(
+      screen.getAllByRole('img', {name: /website logo/i, exact: false})[0].src,
+    ).toBe(websiteDarkThemeLogo)
 
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_167:::When the theme icon button in the Saved Videos Route is clicked, then the page should change to dark theme and consist of the HTML container element with data-testid attribute value as "savedVideos" and background color as "#0f0f0f":::5:::', () => {
+  it(':::RJSCPYQN94_TEST_167:::When the theme button is clicked in the SavedVideos Route, then the Trending link is clicked, then the page should be navigated to Trending Route and the theme should remain the same:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+
+    userEvent.click(screen.getAllByTestId('theme')[0])
+
+    expect(
+      screen.getAllByRole('img', {name: /website logo/i, exact: false})[0],
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getAllByRole('img', {name: /website logo/i, exact: false})[0].src,
+    ).toBe(websiteDarkThemeLogo)
+
+    const homeBtn = screen.getByRole('link', {
+      hidden: true,
+      name: /Home/i,
+      exact: false,
+    })
+
+    userEvent.click(homeBtn)
+
+    expect(
+      await screen.findByText(homeVideosResponse.videos[0].title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+
+    expect(window.location.pathname).toBe('/')
+
+    expect(
+      screen.getAllByRole('img', {name: /website logo/i, exact: false})[0],
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getAllByRole('img', {name: /website logo/i, exact: false})[0].src,
+    ).toBe(websiteDarkThemeLogo)
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_168:::When the theme button is clicked then the trending Route should consist of a dark theme and the "#0f0f0f" color provided should be applied as the background color for the styled component with data-testid as "savedVideos":::5:::', () => {
+    mockGetCookie()
+    renderWithBrowserRouter(<App />)
 
     userEvent.click(screen.getAllByTestId('theme')[0])
 
     expect(screen.getByTestId('savedVideos')).toHaveStyle(
       'background-color: #0f0f0f',
     )
-
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_168:::When the theme icon button in the Saved Videos Route is clicked, and the Home link is clicked, then the page should be navigated to the Home Route, and the theme should remain the same:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_169:::When the Logout button in the Header of the SavedVideos Route is clicked, then the page should consist of Popup from reactjs-popup:::5:::', () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-
-    userEvent.click(screen.getAllByTestId('theme')[0])
-
-    const imageEls = screen.getAllByRole('img', {
-      name: /website logo/i,
-    })
-
-    expect(imageEls[0]).toBeInTheDocument()
-
-    expect(imageEls[0].src).toBe(websiteDarkThemeLogo)
-
-    const homeBtn = screen.getByRole('link', {
-      hidden: true,
-      name: /Home/i,
-    })
-
-    userEvent.click(homeBtn)
-
-    expect(window.location.pathname).toBe(homeRoutePath)
-
-    const homeImageEls = await screen.findAllByRole('img', {
-      name: /website logo/i,
-    })
-
-    expect(homeImageEls[0]).toBeInTheDocument()
-
-    expect(homeImageEls[0].src).toBe(websiteDarkThemeLogo)
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_169:::When the Logout button in the Header of the Saved Videos Route is clicked, then the page should consist of Popup from reactjs-popup:::5:::', () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     userEvent.click(
       screen.getByRole('button', {
         hidden: true,
         name: /Logout/i,
+        exact: false,
       }),
     )
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
-  it(':::RJSCPYQN94_TEST_170:::When the Logout button in the Header of the Saved Videos Route is clicked, then the page should consist of an HTML paragraph element with text content as "Are you sure you want to logout?":::5:::', () => {
+  it(':::RJSCPYQN94_TEST_170:::When the Logout button in the Header of the SavedVideos Route is clicked, then the page should consist of an HTML paragraph element with text content as "Are you sure, you want to logout":::5:::', () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     userEvent.click(
       screen.getByRole('button', {
         hidden: true,
         name: /Logout/i,
+        exact: false,
       }),
     )
-    const paragraphEl = screen.getByText(/Are you sure you want to logout/i)
+    const paragraphEl = screen.getByText(/^Are you sure, you want to logout/i, {
+      exact: false,
+    })
     expect(paragraphEl).toBeInTheDocument()
     expect(paragraphEl.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_171:::When the Logout button in the Header of the Saved Videos Route is clicked, then the page should consist of an HTML button element with text content as "Cancel":::5:::', () => {
+  it(':::RJSCPYQN94_TEST_171:::When the Logout button in the Header of the SavedVideos Route is clicked, then the page should consist of an HTML button element with text content as "Cancel":::5:::', () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     userEvent.click(
       screen.getByRole('button', {
         hidden: true,
         name: /Logout/i,
+        exact: false,
       }),
     )
     expect(
       screen.getByRole('button', {
         name: /Cancel/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_172:::When the Logout button in the Header of the Saved Videos Route is clicked, then the page should consist of an HTML button element with text content as "Confirm":::5:::', () => {
+  it(':::RJSCPYQN94_TEST_172:::When the Logout button in the Header of the SavedVideos Route is clicked, then the page should consist of an HTML button element with text content as "Confirm":::5:::', () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     userEvent.click(
       screen.getByRole('button', {
         hidden: true,
         name: /Logout/i,
+        exact: false,
       }),
     )
     expect(
       screen.getByRole('button', {
         name: /Confirm/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_173:::When the Logout Popup is opened and the Cancel button in the popup is clicked, then the page should not consist of Popup from reactjs-popup:::5:::', () => {
+  it(':::RJSCPYQN94_TEST_173:::When the HTML button element with text content as "Cancel" is clicked, then the page should not consist of Popup from reactjs-popup:::5:::', () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     userEvent.click(
       screen.getByRole('button', {
         hidden: true,
         name: /Logout/i,
+        exact: false,
       }),
     )
     expect(
       screen.getByRole('button', {
         name: /Cancel/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
 
     userEvent.click(
       screen.getByRole('button', {
         name: /Cancel/i,
+        exact: false,
       }),
     )
 
@@ -408,7 +379,7 @@ describe(':::RJSCPYQN94_TEST_SUITE_10:::Saved Videos Route Functionality tests',
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_174:::When the Logout Popup is opened and the Confirm button in the popup is clicked, then the Cookies.remove() method should be called with the argument as "jwt_token":::5:::', () => {
+  it(':::RJSCPYQN94_TEST_174:::When the Logout Popup is opened and the confirm button in the popup is clicked, then the Cookies.remove() method should be called with the argument as "jwt_token":::5:::', () => {
     mockRemoveCookie()
     mockGetCookie()
     rtlRender(<App />)
@@ -416,12 +387,21 @@ describe(':::RJSCPYQN94_TEST_SUITE_10:::Saved Videos Route Functionality tests',
     const logoutBtn = screen.getByRole('button', {
       hidden: true,
       name: /Logout/i,
+      exact: false,
     })
 
     userEvent.click(logoutBtn)
 
+    expect(
+      screen.getByRole('button', {
+        name: /Confirm/i,
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+
     const popupLogoutBtn = screen.getByRole('button', {
       name: /Confirm/i,
+      exact: false,
     })
 
     userEvent.click(popupLogoutBtn)
@@ -430,7 +410,7 @@ describe(':::RJSCPYQN94_TEST_SUITE_10:::Saved Videos Route Functionality tests',
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_175:::When the Logout Popup is opened and the Confirm button in the popup is clicked, then the history.replace() method should be called with the argument as "/login":::5:::', () => {
+  it(':::RJSCPYQN94_TEST_175:::When the Logout Popup is opened and the confirm button in the popup is clicked, the history.replace() method should be called with the argument as "/login":::5:::', () => {
     mockRemoveCookie()
     mockGetCookie()
     const {history} = rtlRender(<App />)
@@ -438,11 +418,20 @@ describe(':::RJSCPYQN94_TEST_SUITE_10:::Saved Videos Route Functionality tests',
     const logoutBtn = screen.getByRole('button', {
       hidden: true,
       name: /Logout/i,
+      exact: false,
     })
     userEvent.click(logoutBtn)
 
+    expect(
+      screen.getByRole('button', {
+        name: /Confirm/i,
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+
     const popupLogoutBtn = screen.getByRole('button', {
       name: /Confirm/i,
+      exact: false,
     })
 
     userEvent.click(popupLogoutBtn)
@@ -452,25 +441,95 @@ describe(':::RJSCPYQN94_TEST_SUITE_10:::Saved Videos Route Functionality tests',
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_176:::When the Logout Popup is opened and the Confirm button in the popup is clicked, then the page should be navigated to the Login Route:::5:::', () => {
+  it(':::RJSCPYQN94_TEST_176:::When the Logout Popup is opened and the confirm button in the popup is clicked, the page should be navigated to Login Route:::5:::', () => {
     mockGetCookie()
     mockRemoveCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     const logoutBtn = screen.getByRole('button', {
       hidden: true,
       name: /Logout/i,
+      exact: false,
     })
     restoreGetCookieFns()
     mockGetCookie(false)
     userEvent.click(logoutBtn)
+    expect(
+      screen.getByRole('button', {
+        name: /Confirm/i,
+        exact: false,
+      }),
+    ).toBeInTheDocument()
 
     const popupLogoutBtn = screen.getByRole('button', {
       name: /Confirm/i,
+      exact: false,
     })
 
     userEvent.click(popupLogoutBtn)
     expect(window.location.pathname).toBe(loginRoutePath)
     restoreRemoveCookieFns()
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_177:::When the "Home" link in the sidebar is clicked then the page should be navigated to Home Route:::5:::', async () => {
+    mockGetCookie()
+    renderWithBrowserRouter(<App />)
+
+    const homeBtn = screen.getByRole('link', {
+      hidden: true,
+      name: /Home/i,
+      exact: false,
+    })
+    userEvent.click(homeBtn)
+
+    expect(
+      await screen.findByText(homeVideosResponse.videos[0].title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+
+    expect(window.location.pathname).toBe(homeRoutePath)
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_178:::When the Trending link in the sidebar is clicked then the page should be navigated to TrendingRoute:::5:::', async () => {
+    mockGetCookie()
+    renderWithBrowserRouter(<App />)
+
+    const trendingBtn = screen.getByRole('link', {
+      hidden: true,
+      name: /Trending/i,
+      exact: false,
+    })
+    userEvent.click(trendingBtn)
+
+    expect(
+      await screen.findByText(trendingVideosResponse.videos[0].title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+
+    expect(window.location.pathname).toBe(trendingRoutePath)
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_179:::When the Gaming link in the sidebar is clicked then the page should be navigated to GamingRoute:::5:::', async () => {
+    mockGetCookie()
+    renderWithBrowserRouter(<App />)
+
+    const gamingBtn = screen.getByRole('link', {
+      hidden: true,
+      name: /Gaming/i,
+      exact: false,
+    })
+    userEvent.click(gamingBtn)
+
+    expect(
+      await screen.findByText(gamingVideosResponse.videos[0].title, {
+        exact: false,
+      }),
+    ).toBeInTheDocument()
+    expect(window.location.pathname).toBe(gamingRoutePath)
     restoreGetCookieFns()
   })
 

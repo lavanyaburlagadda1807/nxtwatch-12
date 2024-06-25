@@ -48,7 +48,7 @@ const restoreGetCookieFns = () => {
   Cookies.get.mockRestore()
 }
 
-const renderWithBrowserRouter = (ui = <App />, {route = '/'} = {}) => {
+const renderWithBrowserRouter = (ui, {route = '/'} = {}) => {
   window.history.pushState({}, 'Test page', route)
   return render(ui, {wrapper: BrowserRouter})
 }
@@ -154,17 +154,19 @@ describe(':::RJSCPYQN94_TEST_SUITE_4:::Home Route UI tests', () => {
     server.listen()
   })
 
+  afterAll(() => {
+    server.close()
+  })
+
   afterEach(() => {
     server.resetHandlers()
     console.error = originalConsoleError
     window.fetch = originalFetch
   })
 
-  afterAll(() => {
-    server.close()
-  })
+  // #region UI Test Cases
 
-  it(':::RJSCPYQN94_TEST_45:::Page should consist of at least two HTML list items, videos list received from the response and the nav items list should be rendered using a unique key as a prop for each video item and nav item respectively:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_45:::Page should consist of at least two HTML list items and the navItemsList, videosList received from the response should be rendered using a unique key as a prop for each nav item and video item respectively :::5:::', async () => {
     mockGetCookie()
     console.error = message => {
       if (
@@ -174,74 +176,96 @@ describe(':::RJSCPYQN94_TEST_SUITE_4:::Home Route UI tests', () => {
         throw new Error(message)
       }
     }
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    await waitForElementToBeRemoved(() => screen.queryByTestId('loader'))
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
 
     expect(screen.getAllByRole('listitem').length).toBeGreaterThanOrEqual(2)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_46:::When "/" is provided as the URL path by an unauthenticated user, then the page should be navigated to the Login Route:::5:::', () => {
+  it(':::RJSCPYQN94_TEST_46:::When "/" is provided as the URL by an unauthenticated user, then the page should be navigated to Login Route:::5:::', () => {
     mockGetCookie(false)
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     expect(window.location.pathname).toBe(loginRoutePath)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_47:::When "/" is provided as the URL path by an authenticated user, then the page should be navigated to the Home Route and should consist of an HTML paragraph element with text content starting with "Buy Nxt Watch Premium" in the banner:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_47:::When "/" is provided as the URL by an authenticated user, then the page should be navigated to Home Route:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
 
     expect(window.location.pathname).toBe(homeRoutePath)
-
-    const paragraphEl = screen.getByText(/^Buy Nxt Watch Premium/i)
-    expect(paragraphEl).toBeInTheDocument()
-    expect(paragraphEl.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_48:::Home Route should consist of an HTML image element in the Header with alt attribute value as "website logo" and src as the given logo URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_48:::Home Route should consist of an HTML image element in the Header with alt attribute value as "website logo" and src as given logo URL:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const imageEls = await screen.findAllByRole('img', {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const imageEls = screen.getAllByRole('img', {
       name: /website logo/i,
+      exact: false,
     })
     expect(imageEls[0]).toBeInTheDocument()
     expect(imageEls[0].src).toBe(websiteLogo)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_49:::Home Route should consist of an HTML image element in the Header with alt attribute value as "website logo" and src as the given logo URL, wrapped with Link from react-router-dom:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_49:::Home Route should consist of an HTML image element in the Header with alt attribute value as "website logo" and src as the given logo URL is wrapped with Link from react-router-dom:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const websiteLogos = await screen.findAllByRole('link', {
-      name: /website logo/i,
-    })
-    expect(websiteLogos[0]).toBeInTheDocument()
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getAllByRole('link', {
+        name: /website logo/,
+        exact: false,
+      })[0],
+    ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
   it(':::RJSCPYQN94_TEST_50:::Home Route should consist of an HTML button element with data-testid attribute value as "theme" in the Header:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const themeButtons = await screen.findAllByTestId('theme')
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
 
-    expect(themeButtons[0]).toBeInTheDocument()
-    expect(themeButtons[0].tagName).toBe('BUTTON')
+    const themeButton = await screen.findAllByTestId('theme')
+
+    expect(themeButton[0]).toBeInTheDocument()
+    expect(themeButton[0].tagName).toBe('BUTTON')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_51:::Home Route should consist of an HTML image element in the Header with alt attribute value as "profile" and src as the given profile image URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_51:::Home Route should consist of an HTML image element in the header with alt attribute value as "profile" and src as the value of given profile image URL:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const imageEl = await screen.findByRole('img', {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const imageEl = screen.getByRole('img', {
       hidden: true,
       name: /profile/i,
+      exact: false,
     })
     expect(imageEl).toBeInTheDocument()
     expect(imageEl.src).toBe(profilePicImage)
@@ -250,128 +274,192 @@ describe(':::RJSCPYQN94_TEST_SUITE_4:::Home Route UI tests', () => {
 
   it(':::RJSCPYQN94_TEST_52:::Home Route should consist of an HTML button element with text content as "Logout" in the Header:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('button', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', {
         hidden: true,
         name: /Logout/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_53:::Home Route should consist of a Link from react-router-dom with text content as "Home":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_53:::Home Route should consist of at least two HTML unordered list elements navItemsList, videosList received from the response to display nav items and video items:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('link', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const listItems = await screen.findAllByRole('list', {hidden: true})
+    expect(listItems[0].tagName).toBe('UL')
+    expect(listItems.length).toBeGreaterThanOrEqual(2)
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_54:::Home Route should consist of "Home" text wrapped with Link from react-router-dom:::5:::', async () => {
+    mockGetCookie()
+    renderWithBrowserRouter(<App />)
+
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
         hidden: true,
         name: /Home/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_54:::Home Route should consist of a Link from react-router-dom with text content as "Trending":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_55:::Home Route should consist of "Trending" text wrapped with Link from react-router-dom:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('link', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
         hidden: true,
         name: /Trending/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_55:::Home Route should consist of a Link from react-router-dom with text content as "Gaming":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_56:::Home Route should consist of "Gaming" text wrapped with Link from react-router-dom:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('link', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
         hidden: true,
         name: /Gaming/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_56:::Home Route should consist of a Link from react-router-dom with text content as "Saved videos":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_57:::Home Route should consist of "Saved videos" text wrapped with Link from react-router-dom:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('link', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
         hidden: true,
         name: /Saved videos/i,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_57:::Home Route should consist of an HTML paragraph element with text content as "CONTACT US" in the Sidebar:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_58:::Home Route should consist of an HTML paragraph element with text content starting with "CONTACT US" in the sidebar:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const paragraphEl = await screen.findByText(/CONTACT US/i, {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const paragraphEl = screen.getByText(/^CONTACT US/i, {
       hidden: true,
+      exact: false,
     })
     expect(paragraphEl).toBeInTheDocument()
     expect(paragraphEl.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_58:::Home Route should consist of an HTML image element with alt attribute value as "facebook logo" and src as the given Facebook logo URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_59:::Home Route should consist of an HTML image element with alt attribute value as "facebook logo" and src as the value of the given facebook logo URL:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const imageEl = await screen.findByRole('img', {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const imageEl = screen.getByRole('img', {
       hidden: true,
       name: /facebook logo/i,
+      exact: false,
     })
     expect(imageEl).toBeInTheDocument()
     expect(imageEl.src).toBe(facebookLogo)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_59:::Home Route should consist of an HTML image element with alt attribute value as "twitter logo" and src as the value of the given Twitter logo URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_60:::Home Route should consist of an HTML image element with alt attribute value as "twitter logo" and src as the value of the given twitter logo URL:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const imageEl = await screen.findByRole('img', {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const imageEl = screen.getByRole('img', {
       hidden: true,
       name: /twitter logo/i,
+      exact: false,
     })
     expect(imageEl).toBeInTheDocument()
     expect(imageEl.src).toBe(twitterLogo)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_60:::Home Route should consist of an HTML image element with alt attribute value as "linkedin logo" and src as the value of the given LinkedIn logo URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_61:::Home Route should consist of an HTML image element with alt attribute value as "linked in logo" and src as the value of the given linked in logo URL:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const imageEl = await screen.findByRole('img', {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const imageEl = screen.getByRole('img', {
       hidden: true,
-      name: /linkedin logo/i,
+      name: /linked in logo/i,
+      exact: false,
     })
     expect(imageEl).toBeInTheDocument()
     expect(imageEl.src).toBe(linkedInLogo)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_61:::Home Route should consist of an HTML paragraph element with text content as "Enjoy! Now you can see your recommendations!" in the Sidebar:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_62:::Home Route should consist of an HTML paragraph element with text content starting with "Enjoy! Now to see your channels and recommendations!" in the sidebar:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const paragraphEl = await screen.findByText(
-      /Enjoy*. Now you can see your recommendations/i,
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const paragraphEl = screen.getByText(
+      /^Enjoy! Now to see your channels and recommendations!/i,
       {
         hidden: true,
+        exact: false,
       },
     )
     expect(paragraphEl).toBeInTheDocument()
@@ -379,144 +467,158 @@ describe(':::RJSCPYQN94_TEST_SUITE_4:::Home Route UI tests', () => {
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_62:::Home Route should consist of an HTML image element with alt attribute value as "nxt watch logo" and src as the given Nxt Watch logo URL in the banner:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_63:::Home Route should consist of an HTML image element with alt attribute value as "nxt watch logo" and src as the value of the given nxt watch logo URL should be displayed in the banner:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const imageEl = await screen.findByRole('img', {
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const imageEl = screen.getByRole('img', {
       hidden: true,
       name: /nxt watch logo/i,
+      exact: false,
     })
     expect(imageEl).toBeInTheDocument()
     expect(imageEl.src).toBe(websiteLogo)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_63:::Home Route should consist of an HTML paragraph element with text content starting with "Buy Nxt Watch Premium" in the banner:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_64:::Home Route should consist of an HTML paragraph element with text content starting with "Buy Nxt Watch Premium" in the banner:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const paragraphEl = await screen.findByText(/^Buy Nxt Watch Premium/i)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const paragraphEl = screen.getByText(/^Buy Nxt Watch Premium/i, {
+      hidden: true,
+      exact: false,
+    })
     expect(paragraphEl).toBeInTheDocument()
     expect(paragraphEl.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_64:::Home Route should consist of an HTML button element with text content as "GET IT NOW" in the banner:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_65:::Home Route should consist of an HTML button element with text content as "GET IT NOW" in the banner:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('button', {
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', {
         hidden: true,
-        name: /GET IT NOW/i,
+        name: /GET IT NOW/,
+        exact: false,
       }),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_65:::Home Route should consist of an HTML button element with data-testid as "close" in the banner:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_66:::Home Route should consist of an HTML button element with data-testid "close" should be displayed in the banner:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const closeButton = await screen.findByTestId('close')
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
 
-    expect(closeButton).toBeInTheDocument()
-    expect(closeButton.tagName).toBe('BUTTON')
+    expect(screen.getByTestId('close')).toBeInTheDocument()
+    expect(screen.getByTestId('close').tagName).toBe('BUTTON')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_66:::Home Route should consist of a styled HTML container element with data-testid as "banner" and background image URL as the URL provided for the banner background image:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_67:::Home Route should consist of styled HTML container element with data-testid as "banner" and background image URL as the URL provided for banner:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    expect(await screen.findByTestId('banner')).toHaveStyle(
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    expect(screen.getByTestId('banner')).toHaveStyle(
       `background-image: url(${backgroundImage})`,
     )
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_67:::Home Route should consist of an HTML input element with type attribute value as "search":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_68:::Home Route should consist of styled HTML container element with data-testid as "banner" and background image URL as the URL provided for banner:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const searchEl = await screen.findByRole('searchbox')
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
 
-    expect(searchEl.type).toBe('search')
+    expect(screen.getByTestId('banner', {hidden: true})).toHaveStyle(
+      `background-image: url(${backgroundImage})`,
+    )
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_69:::Home Route should consist of HTML input element with type attribute value as "search":::5:::', async () => {
+    mockGetCookie()
+    renderWithBrowserRouter(<App />)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+    const searchEls = screen.getAllByRole('searchbox')
+    expect(searchEls.length).toBeGreaterThanOrEqual(1)
+    expect(searchEls[0].type).toBe('search')
 
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_68:::Home Route should consist of an HTML button element with data-testid attribute value as "searchButton":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_70:::Home Route should consist of HTML button element with data-testid attribute value as "searchButton":::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-
-    const searchBtnEl = await screen.findByTestId('searchButton')
-
-    expect(searchBtnEl.type).toBe('button')
+    renderWithBrowserRouter(<App />)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+    const searchBtnEls = screen.getAllByTestId('searchButton')
+    expect(searchBtnEls.length).toBeGreaterThanOrEqual(1)
+    expect(searchBtnEls[0].type).toBe('button')
 
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_69:::When the Home Route is opened, it should initially consist of an HTML container element with testid attribute value as "loader":::5:::', async () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
-
-    await waitForElementToBeRemoved(() => screen.queryByTestId('loader'))
-
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_70:::When the Home Route is opened, an HTTP GET request should be made to the given Home Videos API URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_71:::When the Home Route is opened, an HTTP GET request should be made to homeVideosApiUrl:::5:::', async () => {
     mockGetCookie()
     const mockFetchFunction = jest.fn().mockImplementation(() => ({
       ok: true,
       json: () => Promise.resolve(videosResponse),
     }))
     window.fetch = mockFetchFunction
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
 
     expect(mockFetchFunction.mock.calls[0][0]).toMatch(`${homeVideosApiUrl}`)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_71:::When the HTTP GET request in the Home Route is successful, then the page should consist of at least two HTML unordered list elements to display nav items list and videos list received from the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_72:::When the Home Route is opened, an HTML container element with data-testid attribute value as "loader" should be displayed while the HTTP GET request is in progress:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('loader'))
 
-    await waitForElementToBeRemoved(() => screen.queryByTestId('loader'))
-
-    const listEls = screen.getAllByRole('list', {hidden: true})
-    expect(listEls.length).toBeGreaterThanOrEqual(2)
-    expect(listEls.every(eachEl => eachEl.tagName === 'UL')).toBeTruthy()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_72:::When the HTTP GET request in the Home Route is successful, then the page should consist of HTML paragraph elements with text content as the values of the key "title" received from the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_73:::When the HTTP GET request in the Home Route is successful, then the page should consist of the HTML image elements with alt attribute value as "video thumbnail" and src as the value of key "thumbnail_url" of the video item from the videosResponse:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-    const firstParagraphEl = await screen.findByText(
-      videosResponse.videos[0].title,
-      {exact: false},
-    )
-    expect(firstParagraphEl).toBeInTheDocument()
-    expect(firstParagraphEl.tagName).toBe('P')
-
-    const secondParagraphEl = screen.getByText(videosResponse.videos[1].title, {
-      exact: false,
-    })
-    expect(secondParagraphEl).toBeInTheDocument()
-    expect(secondParagraphEl.tagName).toBe('P')
-    restoreGetCookieFns()
-  })
-
-  it(':::RJSCPYQN94_TEST_73:::When the HTTP GET request in the Home Route is successful, then the page should consist of HTML image elements with alt attribute value as "video thumbnail" and src as the values of the key "thumbnail_url" received from the videos response:::5:::', async () => {
-    mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     const imageEls = await screen.findAllByRole('img', {
       hidden: true,
       name: /video thumbnail/i,
+      exact: false,
     })
 
     expect(imageEls[0]).toBeInTheDocument()
@@ -528,13 +630,14 @@ describe(':::RJSCPYQN94_TEST_SUITE_4:::Home Route UI tests', () => {
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_74:::When the HTTP GET request in the Home Route is successful, then the page should consist of HTML image elements with alt attribute value as "channel logo" and src as the values of the key "profile_image_url" in the channel details received from the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_74:::When the HTTP GET request in the Home Route is successful, then the page should consist of the HTML image elements with alt attribute value as "channel logo" and src as the value of key "profile_image_url" in the channel inside the video item from the videosResponse:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     const imageEls = await screen.findAllByRole('img', {
       hidden: true,
       name: /channel logo/i,
+      exact: false,
     })
 
     expect(imageEls[0]).toBeInTheDocument()
@@ -549,62 +652,81 @@ describe(':::RJSCPYQN94_TEST_SUITE_4:::Home Route UI tests', () => {
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_75:::When the HTTP GET request in the Home Route is successful, then the page should consist of HTML paragraph elements with text content as the values of the key "name" in the channel details received from the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_75:::When the HTTP GET request in the Home Route is successful, then the page should consist of the HTML paragraph elements with text content as the value of the key "title" in each item from the videosResponse:::5:::', async () => {
+    mockGetCookie()
+    renderWithBrowserRouter(<App />)
+    const storeAwaitFunction = await screen.findByText(
+      videosResponse.videos[0].title,
+      {exact: false},
+    )
+    expect(storeAwaitFunction).toBeInTheDocument()
+    expect(storeAwaitFunction.tagName).toBe('P')
+
+    const storeAwaitFunction2 = await screen.findByText(
+      videosResponse.videos[1].title,
+      {exact: false},
+    )
+    expect(storeAwaitFunction2).toBeInTheDocument()
+    expect(storeAwaitFunction2.tagName).toBe('P')
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_76:::When the HTTP GET request in the Home Route is successful, then the page should consist of the HTML paragraph elements with text content as the value of the key "name" in each item from the videosResponse:::5:::', async () => {
     mockGetCookie()
 
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const firstParagraphEl = await screen.findByText(
+    const storeAwaitFunction = await screen.findByText(
       videosResponse.videos[0].channel.name,
       {
         exact: false,
       },
     )
 
-    expect(firstParagraphEl).toBeInTheDocument()
+    expect(storeAwaitFunction).toBeInTheDocument()
 
-    expect(firstParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction.tagName).toBe('P')
 
-    const secondParagraphEl = screen.getByText(
+    const storeAwaitFunction2 = await screen.findByText(
       videosResponse.videos[1].channel.name,
       {
         exact: false,
       },
     )
 
-    expect(secondParagraphEl).toBeInTheDocument()
-    expect(secondParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction2).toBeInTheDocument()
+    expect(storeAwaitFunction2.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_76:::When the HTTP GET request in the Home Route is successful, then the page should consist of HTML paragraph elements with text content as the values of the key "view_count" received the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_77:::When the HTTP GET request in the Home Route is successful, then the page should consist of the HTML paragraph elements with text content as the value of the key "view_count" in each item from the videosResponse:::5:::', async () => {
     mockGetCookie()
 
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const firstParagraphEl = await screen.findByText(
+    const storeAwaitFunction = await screen.findByText(
       videosResponse.videos[0].view_count,
       {
         exact: false,
       },
     )
-    expect(firstParagraphEl).toBeInTheDocument()
+    expect(storeAwaitFunction).toBeInTheDocument()
 
-    expect(firstParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction.tagName).toBe('P')
 
-    const secondParagraphEl = screen.getByText(
+    const storeAwaitFunction2 = await screen.findByText(
       videosResponse.videos[1].view_count,
       {
         exact: false,
       },
     )
 
-    expect(secondParagraphEl).toBeInTheDocument()
-    expect(secondParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction2).toBeInTheDocument()
+    expect(storeAwaitFunction2.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_77:::When the HTTP GET request in the Home Route is successful, then the page should consist of HTML paragraph elements with text content as the values of the key "published_at" received from the videos response:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_78:::When the HTTP GET request in the Home Route is successful, then the page should consist of the HTML paragraph elements with text content as the value of the key "published_at" in each item from the videosResponse:::5:::', async () => {
     mockGetCookie()
 
     const dateFormatDistance = dateString => {
@@ -623,127 +745,212 @@ describe(':::RJSCPYQN94_TEST_SUITE_4:::Home Route UI tests', () => {
 
     const formattedDate2 = dateFormatDistance(date2)
 
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const firstParagraphEl = await screen.findByText(
+    const storeAwaitFunction = await screen.findByText(
       new RegExp(`${date1}|${formattedDate1}`),
+      {
+        exact: false,
+      },
     )
-    expect(firstParagraphEl).toBeInTheDocument()
-    expect(firstParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction).toBeInTheDocument()
+    expect(storeAwaitFunction.tagName).toBe('P')
 
-    const secondParagraphEl = screen.getByText(
+    const storeAwaitFunction2 = screen.getByText(
       new RegExp(`${date2}|${formattedDate2}`),
+      {
+        exact: false,
+      },
     )
 
-    expect(secondParagraphEl).toBeInTheDocument()
-    expect(secondParagraphEl.tagName).toBe('P')
+    expect(storeAwaitFunction2).toBeInTheDocument()
+    expect(storeAwaitFunction2.tagName).toBe('P')
 
     restoreGetCookieFns()
   })
 
   // #region functionality Test Cases
 
-  it(':::RJSCPYQN94_TEST_78:::When a non-empty value is provided in the HTML input element for search, then the value provided should be displayed in the HTML input element:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_79:::When a non-empty value is provided in an HTML input element for search, then that text should be displayed in the HTML input element:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-
-    const inputEl = await screen.findByRole('searchbox')
-    userEvent.type(inputEl, '101')
-    expect(inputEl).toHaveValue('101')
-  })
-
-  it(':::RJSCPYQN94_TEST_79:::When a non-empty value is provided in the HTML input element for search and the search icon button is clicked, then an HTTP GET request should be made with the value provided in the HTML input element as the value to query parameter "search":::5:::', async () => {
-    mockGetCookie()
-
     const mockFetchFunction = jest.fn().mockImplementation(() => ({
       ok: true,
       json: () => Promise.resolve(videosResponse),
     }))
     window.fetch = mockFetchFunction
-    renderWithBrowserRouter()
-    const inputEl = await screen.findByRole('searchbox')
+    renderWithBrowserRouter(<App />)
 
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    const inputEl = screen.getByRole('searchbox')
     userEvent.type(inputEl, '101')
-    userEvent.click(screen.getByTestId('searchButton'))
+    expect(inputEl).toHaveValue('101')
+  })
+
+  it(':::RJSCPYQN94_TEST_80:::When a value is provided in the HTML input element for search and the "Search" button is clicked, an HTTP GET request should be made with the value provided in the HTML input element as the value to query parameter "search":::5:::', async () => {
+    mockGetCookie()
+    const mockFetchFunction = jest.fn().mockImplementation(() => ({
+      ok: true,
+      json: () => Promise.resolve(videosResponse),
+    }))
+    window.fetch = mockFetchFunction
+    renderWithBrowserRouter(<App />)
+
+    expect(
+      await screen.findByText(videosResponse.videos[0].title, {exact: false}),
+    ).toBeInTheDocument()
+
+    userEvent.type(screen.getAllByRole('searchbox')[0], '101')
+    userEvent.click(screen.getAllByTestId('searchButton')[0])
     expect(mockFetchFunction.mock.calls[1][0]).toMatch('search=101')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_80:::Home Route should consist of Video items wrapped with Link from react-router-dom:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_81:::Home Route should consist of an Video item wrapped with Link from react-router-dom:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
-    const videos = await screen.findAllByRole('link', {
-      name: /video thumbnail/i,
-    })
-    expect(videos[0]).toBeInTheDocument()
+    renderWithBrowserRouter(<App />)
+
+    const storeAwaitFunction = await screen.findByText(
+      videosResponse.videos[0].title,
+      {exact: false},
+    )
+    expect(storeAwaitFunction).toBeInTheDocument()
+
+    expect(
+      screen.getAllByRole('link', {
+        name: /video thumbnail/,
+        exact: false,
+      })[0],
+    ).toBeInTheDocument()
 
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_81:::When a Video in the Home Route is clicked, then the page should be navigated to the Video Item Details Route with "/videos/:id" as the URL path:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_82:::When a Video Item is clicked in Home Route, then the page should be navigated to the Video Item Details route with "/videos/:id" in the URL path:::5:::', async () => {
     mockGetCookie()
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const videos = await screen.findAllByRole('link', {
-      name: /video thumbnail/i,
-    })
+    const storeAwaitFunction = await screen.findByText(
+      videosResponse.videos[0].title,
+      {exact: false},
+    )
+    expect(storeAwaitFunction).toBeInTheDocument()
 
-    userEvent.click(videos[0])
+    userEvent.click(storeAwaitFunction)
 
     expect(window.location.pathname).toMatch(
       '/videos/802fcd20-1490-43c5-9e66-ce6dfefb40d1',
     )
+
+    const videoDetailsTitle = await screen.findByText(
+      videoDetailsResponse.video_details.title,
+      {
+        exact: false,
+      },
+    )
+
+    expect(videoDetailsTitle).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_82:::When the HTTP GET request made to the given Home Videos API URL returns the videos list as empty, then the page should consist of an HTML image element with alt attribute value as "no videos" and src as the given no videos view image URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_83:::When the HTTP GET request made to homeVideosApiUrl returns the videos list as empty, then the page should consist of the HTML image element with alt attribute value as "no videos" and src as the given "No Videos view image URL":::5:::', async () => {
     mockGetCookie()
-
     const mockFetchFunction = jest.fn().mockImplementation(() => ({
       ok: true,
       json: () => Promise.resolve({videos: []}),
     }))
     window.fetch = mockFetchFunction
+    renderWithBrowserRouter(<App />)
 
-    renderWithBrowserRouter()
-
-    const imageEl = await screen.findByRole('img', {
+    const imgEl = await screen.findByRole('img', {
       name: /no videos/i,
+      exact: false,
     })
-    expect(imageEl).toBeInTheDocument()
-    expect(imageEl.src).toBe(notFoundView)
+    expect(imgEl).toBeInTheDocument()
+    expect(imgEl.src).toBe(notFoundView)
+    window.fetch = originalFetch
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_83:::When the HTTP GET request made to the given Home Videos API URL returns the videos list as empty, then the page should consist of an HTML main heading element with text content as "No Search Results Found":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_84:::When the HTTP GET request made to homeVideosApiUrl returns the videos list as empty, then the page should consist of the HTML main heading element with text content as "No Search results found":::5:::', async () => {
     mockGetCookie()
     const mockFetchFunction = jest.fn().mockImplementation(() => ({
       ok: true,
       json: () => Promise.resolve({videos: []}),
     }))
     window.fetch = mockFetchFunction
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
     expect(
-      await screen.findByRole('heading', {
-        name: /No Search Results Found/i,
-      }),
+      await screen.findByRole('heading', {name: /No Search results found/i}),
     ).toBeInTheDocument()
+
+    window.fetch = originalFetch
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_84:::When the HTTP GET request made to the given Home Videos API URL returns the videos list as empty, then the page should consist of an HTML paragraph element with text content starting with "Try different keywords":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_85:::When the HTTP GET request made to homeVideosApiUrl returns the videos list as empty, then the page should consist of the HTML paragraph element with text content as "Try different key words or remove search filter":::5:::', async () => {
     mockGetCookie()
     const mockFetchFunction = jest.fn().mockImplementation(() => ({
       ok: true,
       json: () => Promise.resolve({videos: []}),
     }))
     window.fetch = mockFetchFunction
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
 
-    const paragraphEl = await screen.findByText(/Try different keywords/i)
+    const paragraphEl = await screen.findByText(
+      /^Try different key words or remove search filter/i,
+      {
+        exact: false,
+      },
+    )
     expect(paragraphEl).toBeInTheDocument()
     expect(paragraphEl.tagName).toBe('P')
+
+    window.fetch = originalFetch
     restoreGetCookieFns()
   })
+
+  it(':::RJSCPYQN94_TEST_86:::When the HTTP GET request made to homeVideosApiUrl returns the videos list as empty, then the page should consist of the HTML button element with text content as "Retry":::5:::', async () => {
+    mockGetCookie()
+    const mockFetchFunction = jest.fn().mockImplementation(() => ({
+      ok: true,
+      json: () => Promise.resolve({videos: []}),
+    }))
+    window.fetch = mockFetchFunction
+    renderWithBrowserRouter(<App />)
+
+    const buttonEl = await screen.findByRole('button', {
+      name: /Retry/i,
+      exact: false,
+    })
+
+    expect(buttonEl).toBeInTheDocument()
+    window.fetch = originalFetch
+    restoreGetCookieFns()
+  })
+
+  it(':::RJSCPYQN94_TEST_87:::When the HTTP GET request made to homeVideosApiUrl returns the videos list as empty and the "Retry" button is clicked, then an HTTP GET request should be made to homeVideosApiUrl:::5:::', async () => {
+    mockGetCookie()
+    const mockFetchFunction = jest.fn().mockImplementation(() => ({
+      ok: false,
+      json: () => Promise.resolve({videos: []}),
+    }))
+    window.fetch = mockFetchFunction
+    renderWithBrowserRouter(<App />)
+    const buttonEl = await screen.findByRole('button', {
+      name: /Retry/i,
+      exact: false,
+    })
+    expect(buttonEl).toBeInTheDocument()
+    userEvent.click(buttonEl)
+    expect(mockFetchFunction.mock.calls[1][0]).toBe(
+      `${homeVideosApiUrlWithSearchParameter}`,
+    )
+    restoreGetCookieFns()
+  })
+
+  // #endregion
 })

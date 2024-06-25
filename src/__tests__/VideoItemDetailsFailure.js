@@ -1,5 +1,6 @@
 import 'jest-styled-components'
-import {BrowserRouter} from 'react-router-dom'
+import {createMemoryHistory} from 'history'
+import {Router, BrowserRouter} from 'react-router-dom'
 import Cookies from 'js-cookie'
 
 import {rest} from 'msw'
@@ -34,7 +35,7 @@ const restoreGetCookieFns = () => {
 }
 
 const renderWithBrowserRouter = (
-  ui = <App />,
+  ui,
   {route = videoItemDetailRoutePath} = {},
 ) => {
   window.history.pushState({}, 'Test page', route)
@@ -185,11 +186,14 @@ const videoDetailsResponse = {
   ],
 }
 
-const homeVideosApiUrl = 'https://apis.ccbp.in/videos/all'
+const homeVideosApiUrl =
+  'https://apis.ccbp.in/videos/all'
 
-const trendingVideosApiUrl = 'https://apis.ccbp.in/videos/trending'
+const trendingVideosApiUrl =
+  'https://apis.ccbp.in/videos/trending'
 
-const gamingVideosApiUrl = 'https://apis.ccbp.in/videos/gaming'
+const gamingVideosApiUrl =
+  'https://apis.ccbp.in/videos/gaming'
 
 const videoDetailsApiUrl =
   'https://apis.ccbp.in/videos/802fcd20-1490-43c5-9e66-ce6dfefb40d1'
@@ -229,7 +233,7 @@ describe(':::RJSCPYQN94_TEST_SUITE_15:::Video Item Details Route Failure tests',
     server.close()
   })
 
-  it(':::RJSCPYQN94_TEST_255:::When the HTTP GET request made in the Video Item Details Route is unsuccessful, then the page should consist of an HTML image element with alt attribute value as "failure view" and src as the given failure view image URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_258:::When the HTTP GET request made in VideoItemDetails Route is unsucessfull, then the page should consist of the HTML image element with alt attribute value as "failure view" and src as the given Failure view image URL:::5:::', async () => {
     mockGetCookie()
     server.use(
       rest.get(videoDetailsApiUrl, (req, res, ctx) =>
@@ -239,16 +243,17 @@ describe(':::RJSCPYQN94_TEST_SUITE_15:::Video Item Details Route Failure tests',
         ),
       ),
     )
-    renderWithBrowserRouter()
-    const imageEl = await screen.findByRole('img', {
+    renderWithBrowserRouter(<App />)
+    const imgEl = await screen.findByRole('img', {
       name: /failure view/i,
+      exact: false,
     })
-    expect(imageEl).toBeInTheDocument()
-    expect(imageEl.src).toBe(errorView)
+    expect(imgEl).toBeInTheDocument()
+    expect(imgEl.src).toBe(errorView)
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_256:::When the HTTP GET request made in the Video Item Details Route is unsuccessful, then the page should consist of an HTML main heading element with text content as "Oops! Something Went Wrong":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_259:::When the HTTP GET request made in VideoItemDetails Route is unsucessfull, then the page should consist of the HTML main heading element with text content as "Oops! Something Went Wrong":::5:::', async () => {
     mockGetCookie()
     server.use(
       rest.get(videoDetailsApiUrl, (req, res, ctx) =>
@@ -258,15 +263,16 @@ describe(':::RJSCPYQN94_TEST_SUITE_15:::Video Item Details Route Failure tests',
         ),
       ),
     )
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     const headingEl = await screen.findByRole('heading', {
-      name: /Oops*. Something Went Wrong/i,
+      name: /Oops! Something Went Wrong/i,
+      exact: false,
     })
     expect(headingEl).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_257:::When the HTTP GET request made in the Video Item Details Route is unsuccessful, then the page should consist of an HTML paragraph element with text content starting with "We are having some trouble":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_260:::When the HTTP GET request made in VideoItemDetails Route is unsucessfull, then the page should consist of the HTML paragraph element with text content as "We are having some trouble to complete your request. Please try again.":::5:::', async () => {
     mockGetCookie()
     server.use(
       rest.get(videoDetailsApiUrl, (req, res, ctx) =>
@@ -276,14 +282,19 @@ describe(':::RJSCPYQN94_TEST_SUITE_15:::Video Item Details Route Failure tests',
         ),
       ),
     )
-    renderWithBrowserRouter()
-    const paragraphEl = await screen.findByText(/We are having some trouble/i)
+    renderWithBrowserRouter(<App />)
+    const paragraphEl = await screen.findByText(
+      /We are having some trouble to complete your request. Please try again./i,
+      {
+        exact: false,
+      },
+    )
     expect(paragraphEl).toBeInTheDocument()
     expect(paragraphEl.tagName).toBe('P')
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_258:::When the HTTP GET request made in the Video Item Details Route is unsuccessful, then the page should consist of an HTML button element with text content as "Retry":::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_261:::When the HTTP GET request made in VideoItemDetails Route is unsucessfull, then the page should consist of the HTML button element with text content as "Retry":::5:::', async () => {
     mockGetCookie()
     server.use(
       rest.get(videoDetailsApiUrl, (req, res, ctx) =>
@@ -293,23 +304,24 @@ describe(':::RJSCPYQN94_TEST_SUITE_15:::Video Item Details Route Failure tests',
         ),
       ),
     )
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     expect(
-      await screen.findByRole('button', {name: /Retry/i}),
+      await screen.findByRole('button', {name: /Retry/i, exact: false}),
     ).toBeInTheDocument()
     restoreGetCookieFns()
   })
 
-  it(':::RJSCPYQN94_TEST_259:::When the HTTP GET request made in the Video Item Details Route is unsuccessful and the Retry button is clicked, then an HTTP GET request should be made to the given Video Details API URL:::5:::', async () => {
+  it(':::RJSCPYQN94_TEST_262:::When the HTTP GET request made in VideoItemDetails Route is unsucessfull and the "Retry" button is clicked, then an HTTP GET request should be made to videoDetailsApiUrl:::5:::', async () => {
     mockGetCookie()
     const mockFetchFunction = jest.fn().mockImplementation(() => ({
       ok: false,
       json: () => Promise.resolve({}),
     }))
     window.fetch = mockFetchFunction
-    renderWithBrowserRouter()
+    renderWithBrowserRouter(<App />)
     const buttonEl = await screen.findByRole('button', {
       name: /Retry/i,
+      exact: false,
     })
     expect(buttonEl).toBeInTheDocument()
     userEvent.click(buttonEl)
